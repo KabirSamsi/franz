@@ -1,0 +1,3 @@
+SET key=A; time=4 4; beat=allegro
+
+

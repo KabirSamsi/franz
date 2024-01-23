@@ -1,0 +1,10 @@
+let primary_pattern = [q q q q q q h] in 
+
+map primary_pattern [
+    [c3 c3 g g a g]
+    [f f e e d d c]
+    [g g f f e e d]
+    [g g f f e e d]
+    [c c g g a g]
+    [f f e e d d c]
+]
