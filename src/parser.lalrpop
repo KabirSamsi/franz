@@ -1,0 +1,15 @@
+use std::str::FromStr;
+use ast::{BasePitch, Accidental, BaseNoteLen, Component, Expr, Op}; // (0)
+
+grammar;
+
+pub Expr: Box<Expr> = { // (1)
+    Expr ExprOp Factor => Box::new(Expr::Op(<>)), // (2)
+    Factor,
+};
+
+ExprOp: Op = { // (3)
+    "+" => Token::Plus,
+    "*" => Opcode::Times,
+    "=" => Opcode::Equals,
+};

@@ -1,0 +1,53 @@
+(* Note that here, we always pass in a notes sequence. It's an implicit argument *)
+motif intro(split1, split2) = {
+    (split1 ? e; e : q;);
+    q.; e; q; q; 
+    (split2 ? q; q; q : h.)
+};
+
+motif mid_part() {
+    q; h; h; q.; e; h; 
+    q.; e; q; q; h.
+}
+
+motif transition1() {
+    rst; e; e; q; q; q; h.
+}
+
+motif transition2() {
+    2 * (e; e; q;);
+    e.; q; h;
+    q; q; q; q; tie(w; h.)
+}
+
+motif intro_eighth(notes) = {intro(notes, true, false)};
+motif intro_qtr(notes) = {intro(notes, false, false)};
+motif intro_qtr_split(notes, split2) = {intro(notes, false, true)};
+
+control = {
+    use {
+        keysig = {bb, eb, ab};
+    }
+    
+    phrase_1 = {
+        intro_eighth({c4, d4, e4, d4, e4, g4, d4});
+        intro_qtr({g3, c4, b3, c4, e4, b3});
+        intro_qtr({g3, a3, g3, a3, e4, g3});
+        intro_qtr({e4, d4, a3, a3, d4, d4});
+
+        intro_eighth({c4, d4, e4, d4, e4, g4, d4});
+        intro_qtr({g3, c4, b3, c4, e4, b3});
+        intro_qtr_split({g3, a3, e4, d4, e4, f4, g4, e4});
+        transition1({e4, d4, c4, d4, b+3, c4})
+    };
+
+    return phrase_1 + seq {
+        intro_eighth({e4, f4, g4, f4, g4, b4, f4});
+        intro_eighth({b3, e4, d4, e4, g4, d4});
+        transition2({c4, d4, e4, d, e, 4, e, b, b, a, g, f, e, g});
+
+        (* Middle section *)
+        mid_part({g4, c5, b4, g4, f4, e4, f4, e4, f4, b4, g4})
+        mid_part({g4, c5, b4, g4, f4, e4, f4, e4, f4, d4, c4})
+    } + phrase_1
+}
