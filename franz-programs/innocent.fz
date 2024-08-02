@@ -11,7 +11,7 @@ motif mid_part() {
 }
 
 motif transition1() {
-    rst; et; et; q; q; q; h.
+    et; et; q; q; q; h.
 }
 
 motif transition2() {

@@ -1,16 +1,15 @@
 // Imports
 mod ast;
+mod songs;
 use std::fs::File;
-use std::io::prelude::*;
+use std::io::Write;
 use crate::ast::*;
-use crate::ast::BasePitch::*;
-use crate::ast::Accidental::*;
-use crate::ast::BaseNoteLen::*;
 
 // Compute a note's MIDI/piano pitch index
 fn note_idx(noteval: &BasePitch, acc: &Accidental) -> i32 {
     // Compute note index based on pitch
     let note : i32 = match noteval {
+        BasePitch::Rest => -1,
         BasePitch::C => 0,
         BasePitch::D => 2,
         BasePitch::E => 4,
@@ -44,7 +43,7 @@ fn length_idx(beatval: &BaseNoteLen) -> i32 {
 }
 
 // Compute frequency and length of a note
-fn process(note : &Note) -> (f32, f32) {
+fn process(note : &Note, speed : f32) -> (f32, f32) {
     let two : f32 = 2.0;
     let half : f32 = 0.5;
     
@@ -64,58 +63,44 @@ fn process(note : &Note) -> (f32, f32) {
     }
 
     // Truncated floating-point precision calculation for time
-    let time : f32 = (300.0 * growth_factor * two.powf(length_idx(&beat) as f32)).round() /1000.0;
+    let time : f32 = (1000.0 * speed * growth_factor * two.powf(length_idx(&beat) as f32)).round() /1000.0;
 
     return (freq, time);
 }
 
-fn main() -> std::io::Result<()> {
-    // Write results directly to file
-    let mut file = File::create("chuck-programs/innocent.ck")?;
-    let mut vec = Vec::new();
+// Compile an AST to a series of notes, and write to file
+fn compile_seq(name : &str, song : &Expr, speed : f32, print : bool) -> std::io::Result<()> {
+    //Write results to file
+    let mut file = File::create(format!("chuck-programs/{name}.ck"))?;
+    let (mut freq, mut time);
 
-    // For now, just an IR representation of what `franz-programs/innocent.ck` should look like at the beginning!
-    vec.push(((C, Natural, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 1)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Half, 1)));
+    let empty = &Vec::new();
 
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 1)));
-    vec.push(((B, Flat, 3), (Eighth, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 3), (Half, 1)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((A, Flat, 3), (Qtr, 1)));
-    vec.push(((G, Natural, 3), (Eighth, 0)));
-    vec.push(((A, Flat, 3), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 3), (Half, 1)));
-
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 1)));
-    vec.push(((A, Natural, 3), (Eighth, 0)));
-    vec.push(((A, Natural, 3), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Half, 1)));
-
-    
-    let (mut freq, mut time) = (0.0, 0.0);
+    let notes = match song { //Extract out note sequence, if present
+        Expr::MusicSeq(v) => v,
+        _ => empty
+    };
 
     let _ = file.write_all(b"SinOsc s => dac;\n");
-    let _ = println!("SinOsc s => dac;");
+    
+    if (print) {
+        let _ = println!("SinOsc s => dac;");
+    }
 
-    for i in 0..vec.len() { //Process each line and write it
-        (freq, time) = process(&vec[i]);
+    for i in 0..notes.len() { //Process each line and write it
+        (freq, time) = process(&notes[i], speed);
         let _ = file.write_all((
             format!("0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n")
         ).as_bytes())?;
-        let _ = println!("0.5 => s.gain; {freq} => s.freq; {time} :: second => now;");
+        if (print) {
+            let _ = println!("0.5 => s.gain; {freq} => s.freq; {time} :: second => now;");
+        }
     }
     return Ok(());
+}
+
+fn main() {
+    let _ = compile_seq("innocent", &songs::innocent(), 0.25, false);
+    let _ = compile_seq("star_spangled_banner", &songs::anthem(), 0.3, false);
+    let _ = compile_seq("apprasionata", &songs::apprasionata(), 0.15, false);
 }

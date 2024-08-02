@@ -27,6 +27,7 @@ pub NoteName: BasePitch = {
     "g" => BasePitch::G,
     "a" => BasePitch::A,
     "b" => BasePitch::B,
+    "rst" => BasePitch::Rest,
 };
 
 pub NoteLen: NoteLen = {

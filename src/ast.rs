@@ -1,4 +1,4 @@
-pub enum BasePitch {A, B, C, D, E, F, G}
+pub enum BasePitch {A, B, C, D, E, F, G, Rest}
 pub enum Accidental{Sharp, Flat, Natural, Blank}
 pub enum BaseNoteLen{Ts, Sixteenth, Eighth, Qtr, Half, Whole}
 
