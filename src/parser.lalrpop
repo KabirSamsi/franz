@@ -1,18 +1,22 @@
 use std::str::*;
-use crate::ast::{Pitch, KeySigPitch, NoteLen};
+use crate::ast::{Pitch, KeySigPitch, NoteLen, Note};
 use crate::ast::BasePitch;
 use crate::ast::Accidental;
 use crate::ast::BaseNoteLen;
 
 grammar;
 
-pub KeySigPitch: KeySigPitch = {
-    <note:NoteName> <acc:Accidental> => (note, acc)
+pub Note : Note = {
+    "(" <note: Pitch> ", " <len: NoteLen> ")" => (note, len)
 };
 
 pub Pitch: Pitch = {
     <note:NoteName> <n:Num> => (note, Accidental::Natural, n),
     <note:NoteName> <n:Num> "_" <acc:Accidental> => (note, acc, n)
+};
+
+pub KeySigPitch: KeySigPitch = {
+    <note:NoteName> "_" <acc:Accidental> => (note, acc)
 };
 
 pub NoteName: BasePitch = {

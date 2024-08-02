@@ -9,7 +9,7 @@ pub type Handle = String;
 pub type NoteLen = (BaseNoteLen, Dots);
 pub type KeySigPitch = (BasePitch, Accidental);
 pub type Pitch = (BasePitch, Accidental, i32);
-pub type Note = (BasePitch, Accidental, i32, NoteLen);
+pub type Note = (Pitch, NoteLen);
 
 pub enum Component {
     KeySig(Vec<(BasePitch, Accidental)>),
@@ -26,13 +26,8 @@ pub enum Expr {
     MusicSeq(Vec<(NoteLen, Note)>),
     Plus(Box<Expr>, Box<Expr>),
     Times(Box<Expr>, Box<Expr>),
-    Ternary(Box<Expr>, Box<Expr>, Box<Expr>)
-}
-
-pub enum Op {
-    Plus,
-    Times,
-    Equals
+    Ternary(Box<Expr>, Box<Expr>, Box<Expr>),
+    If(Box<Expr>, Box<Expr>, Box<Expr>)
 }
 
 pub type Control = (Vec<Component>, Vec<Expr>, Expr);
