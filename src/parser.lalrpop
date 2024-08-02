@@ -1,15 +1,49 @@
-use std::str::FromStr;
-use ast::{BasePitch, Accidental, BaseNoteLen, Component, Expr, Op}; // (0)
+use std::str::*;
+use crate::ast::{Pitch, KeySigPitch, NoteLen};
+use crate::ast::BasePitch;
+use crate::ast::Accidental;
+use crate::ast::BaseNoteLen;
 
 grammar;
 
-pub Expr: Box<Expr> = { // (1)
-    Expr ExprOp Factor => Box::new(Expr::Op(<>)), // (2)
-    Factor,
+pub KeySigPitch: KeySigPitch = {
+    <note:NoteName> <acc:Accidental> => (note, acc)
 };
 
-ExprOp: Op = { // (3)
-    "+" => Token::Plus,
-    "*" => Opcode::Times,
-    "=" => Opcode::Equals,
+pub Pitch: Pitch = {
+    <note:NoteName> <n:Num> => (note, Accidental::Natural, n),
+    <note:NoteName> <n:Num> "_" <acc:Accidental> => (note, acc, n)
+};
+
+pub NoteName: BasePitch = {
+    "c" => BasePitch::C,
+    "d" => BasePitch::D,
+    "e" => BasePitch::E,
+    "f" => BasePitch::F,
+    "g" => BasePitch::G,
+    "a" => BasePitch::A,
+    "b" => BasePitch::B,
+};
+
+pub NoteLen: NoteLen = {
+    <b:Beat> <dots:r"[.]*"> => (b, String::from(dots).chars().count().try_into().unwrap())
+};
+
+pub Beat: BaseNoteLen = {
+    "t" => BaseNoteLen::Ts,
+    "s" => BaseNoteLen::Sixteenth,
+    "et" => BaseNoteLen::Eighth,
+    "q" => BaseNoteLen::Qtr,
+    "h" => BaseNoteLen::Half,
+    "w" => BaseNoteLen::Whole
+};
+
+pub Accidental: Accidental = {
+    "flt" => Accidental::Flat,
+    "shp" => Accidental::Sharp,
+    "ntl" => Accidental::Natural,
+};
+
+pub Num: i32 = {
+    r"[0-9]+" => i32::from_str(<>).unwrap()
 };

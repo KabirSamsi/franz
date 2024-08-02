@@ -64,19 +64,20 @@ fn process(note : &Note) -> (f32, f32) {
 fn main() {
     let mut vec = Vec::new();
 
-    vec.push((F, Natural, 4, (Eighth, 1)));
-    vec.push((D, Natural, 4, (Sixteenth, 0)));
-    vec.push((B, Flat, 3, (Qtr, 0)));
-    vec.push((D, Natural, 4, (Qtr, 0)));
-    vec.push((F, Natural, 4, (Qtr, 0)));
-    vec.push((B, Flat, 4, (Half, 0)));
+    vec.push((C, Natural, 4, (Eighth, 0)));
+    vec.push((D, Natural, 4, (Eighth, 0)));
+    vec.push((E, Flat, 4, (Qtr, 1)));
+    vec.push((D, Natural, 4, (Eighth, 0)));
+    vec.push((E, Flat, 4, (Qtr, 0)));
+    vec.push((G, Natural, 4, (Qtr, 0)));
+    vec.push((D, Natural, 4, (Half, 1)));
 
-    vec.push((D, Natural, 5, (Eighth, 1)));
-    vec.push((C, Natural, 5, (Sixteenth, 0)));
-    vec.push((B, Flat, 4, (Qtr, 0)));
-    vec.push((D, Natural, 4, (Qtr, 0)));
-    vec.push((E, Natural, 4, (Qtr, 0)));
-    vec.push((F, Natural, 4, (Half, 0)));
+    vec.push((G, Natural, 3, (Qtr, 0)));
+    vec.push((C, Natural, 4, (Qtr, 1)));
+    vec.push((B, Flat, 3, (Eighth, 0)));
+    vec.push((C, Natural, 4, (Qtr, 0)));
+    vec.push((E, Flat, 4, (Qtr, 0)));
+    vec.push((B, Flat, 3, (Half, 1)));
 
     println!("SinOsc s => dac;");
     

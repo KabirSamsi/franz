@@ -1,59 +1,14 @@
 SinOsc s => dac;
-
-0.5 => s.gain;
-261.63 => s.freq;
-0.3 :: second => now;
-
-0.5 => s.gain;
-293.66 => s.freq;
-0.3 :: second => now;
-
-0.5 => s.gain;
-311.13 => s.freq;
-0.9 :: second => now;
-
-0.5 => s.gain;
-293.66 => s.freq;
-0.3 :: second => now;
-
-0.5 => s.gain;
-311.13 => s.freq;
-0.6 :: second => now;
-
-0.5 => s.gain;
-392 => s.freq;
-0.6 :: second => now;
-
-0.5 => s.gain;
-293.66 => s.freq;
-1.8 :: second => now;
-
-//Next Part
-
-0.5 => s.gain;
-196.00 => s.freq;
-0.3 :: second => now;
-
-0.5 => s.gain;
-233.08 => s.freq;
-0.3 :: second => now;
-
-0.5 => s.gain;
-261.63 => s.freq;
-0.9 :: second => now;
-
-0.5 => s.gain;
-233.08 => s.freq;
-0.3 :: second => now;
-
-0.5 => s.gain;
-261.63 => s.freq;
-0.6 :: second => now;
-
-0.5 => s.gain;
-311.13 => s.freq;
-0.6 :: second => now;
-
-0.5 => s.gain;
-233.08 => s.freq;
-1.8 :: second => now;
+0.5 => s.gain; 261.62555 => s.freq; 0.3 :: second => now;
+0.5 => s.gain; 293.66476 => s.freq; 0.3 :: second => now;
+0.5 => s.gain; 311.12698 => s.freq; 0.90000004 :: second => now;
+0.5 => s.gain; 293.66476 => s.freq; 0.3 :: second => now;
+0.5 => s.gain; 311.12698 => s.freq; 0.6 :: second => now;
+0.5 => s.gain; 391.99542 => s.freq; 0.6 :: second => now;
+0.5 => s.gain; 293.66476 => s.freq; 1.8000001 :: second => now;
+0.5 => s.gain; 195.99773 => s.freq; 0.6 :: second => now;
+0.5 => s.gain; 261.62555 => s.freq; 0.90000004 :: second => now;
+0.5 => s.gain; 233.08186 => s.freq; 0.3 :: second => now;
+0.5 => s.gain; 261.62555 => s.freq; 0.6 :: second => now;
+0.5 => s.gain; 311.12698 => s.freq; 0.6 :: second => now;
+0.5 => s.gain; 233.08186 => s.freq; 1.8000001 :: second => now;

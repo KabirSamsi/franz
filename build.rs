@@ -1,3 +1,3 @@
 fn main() {
-    println!("Hello world!");
+    lalrpop::process_root().unwrap();
 }

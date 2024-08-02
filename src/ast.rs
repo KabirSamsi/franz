@@ -7,6 +7,8 @@ pub type Dots = i32;
 pub type Handle = String;
 
 pub type NoteLen = (BaseNoteLen, Dots);
+pub type KeySigPitch = (BasePitch, Accidental);
+pub type Pitch = (BasePitch, Accidental, i32);
 pub type Note = (BasePitch, Accidental, i32, NoteLen);
 
 pub enum Component {
