@@ -1,5 +1,5 @@
 pub enum BasePitch {A, B, C, D, E, F, G}
-pub enum Accidental{Sharp, Flat, Natural}
+pub enum Accidental{Sharp, Flat, Natural, Blank}
 pub enum BaseNoteLen{Ts, Sixteenth, Eighth, Qtr, Half, Whole}
 
 // Type synonyms
@@ -20,10 +20,10 @@ pub enum Expr {
     Var(Handle, Box<Expr>),
     Int(i32),
     Bool(bool),
-    Motif(Vec<(Handle, Box<Expr>)>, Vec<NoteLen>),
-    NoteList(Vec<Note>),
+    Motif(Handle, Vec<(Handle, Box<Expr>)>, Vec<NoteLen>),
+    PitchList(Vec<Pitch>),
     MotifApply(Box<Expr>, Box<Expr>),
-    MusicSeq(Vec<(NoteLen, Note)>),
+    MusicSeq(Vec<Note>),
     Plus(Box<Expr>, Box<Expr>),
     Times(Box<Expr>, Box<Expr>),
     Ternary(Box<Expr>, Box<Expr>, Box<Expr>),

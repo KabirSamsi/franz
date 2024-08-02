@@ -24,6 +24,7 @@ fn note_idx(noteval: &BasePitch, acc: &Accidental) -> i32 {
     let accidental : i32 = match acc {
         Accidental::Flat => -1,
         Accidental::Natural => 0,
+        Accidental::Blank => 0,
         Accidental::Sharp => 1
     };
 
@@ -106,13 +107,15 @@ fn main() -> std::io::Result<()> {
     
     let (mut freq, mut time) = (0.0, 0.0);
 
-    file.write_all((b"SinOsc s => dac;\n"));
+    let _ = file.write_all(b"SinOsc s => dac;\n");
+    let _ = println!("SinOsc s => dac;");
 
     for i in 0..vec.len() { //Process each line and write it
         (freq, time) = process(&vec[i]);
         let _ = file.write_all((
             format!("0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n")
         ).as_bytes())?;
+        let _ = println!("0.5 => s.gain; {freq} => s.freq; {time} :: second => now;");
     }
     return Ok(());
 }

@@ -11,7 +11,7 @@ pub Note : Note = {
 };
 
 pub Pitch: Pitch = {
-    <note:NoteName> <n:Num> => (note, Accidental::Natural, n),
+    <note:NoteName> <n:Num> => (note, Accidental::Blank, n),
     <note:NoteName> <n:Num> "_" <acc:Accidental> => (note, acc, n)
 };
 
