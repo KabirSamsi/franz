@@ -14,7 +14,7 @@ pub type Note = (Pitch, NoteLen);
 
 pub enum Param {
     Var(Handle),
-    KeySig(Vec<(KeySigPitch)>),
+    KeySig(Vec<KeySigPitch>),
     Tempo(Tempo),
     TimeSig((i32, i32))
 }
@@ -28,7 +28,8 @@ pub enum AExp {
 
 pub enum BExp {
     Var(Handle),
-    Bool(bool),
+    True,
+    False,
     And(Box<BExp>, Box<BExp>),
     Or(Box<BExp>, Box<BExp>),
     Not(Box<BExp>)
@@ -36,11 +37,11 @@ pub enum BExp {
 
 pub enum RhythmComp {
     Var(Handle),
-    Beat(Vec<NoteLen>),
+    Beat(NoteLen),
     Ternary(BExp, Box<RhythmComp>, Box<RhythmComp>),
     Plus(Box<RhythmComp>, Box<RhythmComp>),
-    TimesL(AExp, Box<RhythmComp>),
-    TimesR(Box<RhythmComp>, AExp)
+    Times(AExp, Box<RhythmComp>)
+    BeatSequence(Vec<Box<RhythmComp>>)
 }
 
 pub enum PitchComp {
@@ -48,8 +49,7 @@ pub enum PitchComp {
     Phrase(Vec<Pitch>),
     Ternary(BExp, Box<PitchComp>, Box<PitchComp>),
     Plus(Box<PitchComp>, Box<PitchComp>),
-    TimesL(AExp, Box<PitchComp>),
-    TimesR(Box<PitchComp>, AExp)
+    Times(AExp, Box<PitchComp>)
 }
 
 pub enum NoteComp {
@@ -57,8 +57,7 @@ pub enum NoteComp {
     Phrase(Vec<Note>),
     Ternary(BExp, Box<NoteComp>, Box<NoteComp>),
     Plus(Box<NoteComp>, Box<NoteComp>),
-    TimesL(AExp, Box<NoteComp>),
-    TimesR(Box<NoteComp>, AExp)
+    Times(AExp, Box<NoteComp>)
 }
 
 pub enum Expr {
