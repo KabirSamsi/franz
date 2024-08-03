@@ -69,15 +69,15 @@ fn process(note : &Note, speed : f32) -> (f32, f32) {
 }
 
 // Compile an AST to a series of notes, and write to file
-fn compile_seq(name : &str, song : &Expr, speed : f32, print : bool) -> std::io::Result<()> {
+fn compile_seq(name : &str, phrase : &crate::NoteComp, speed : f32, print : bool) -> std::io::Result<()> {
     //Write results to file
     let mut file = File::create(format!("chuck-programs/{name}.ck"))?;
     let (mut freq, mut time);
 
     let empty = &Vec::new();
 
-    let notes = match song { //Extract out note sequence, if present
-        Expr::MusicSeq(v) => v,
+    let notes = match phrase { //Extract out note sequence, if present
+        NoteComp::Phrase(v) => v,
         _ => empty
     };
 
