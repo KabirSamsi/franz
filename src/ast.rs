@@ -1,6 +1,7 @@
 pub enum BasePitch {A, B, C, D, E, F, G, Rest}
 pub enum Accidental{Sharp, Flat, Natural, Blank}
 pub enum BaseNoteLen{Ts, Sixteenth, Eighth, Qtr, Half, Whole}
+pub enum Tempo{Lento, Adagio, Andante, Allegro, Presto}
 
 // Type synonyms
 pub type Dots = i32;
@@ -11,9 +12,11 @@ pub type KeySigPitch = (BasePitch, Accidental);
 pub type Pitch = (BasePitch, Accidental, i32);
 pub type Note = (Pitch, NoteLen);
 
-pub enum Component {
+pub enum Param {
     KeySig(Vec<(BasePitch, Accidental)>),
-    Var(Handle, Box<Component>)
+    Tempo(Tempo),
+    TimeSig((i32, i32)),
+    Var(Handle, Box<Param>)
 }
 
 pub enum Expr {
@@ -30,4 +33,4 @@ pub enum Expr {
     If(Box<Expr>, Box<Expr>, Box<Expr>)
 }
 
-pub type Control = (Vec<Component>, Vec<Expr>, Expr);
+pub type Control = (Vec<Param>, Vec<Expr>, Expr);

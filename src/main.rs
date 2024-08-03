@@ -83,7 +83,7 @@ fn compile_seq(name : &str, song : &Expr, speed : f32, print : bool) -> std::io:
 
     let _ = file.write_all(b"SinOsc s => dac;\n");
     
-    if (print) {
+    if print {
         let _ = println!("SinOsc s => dac;");
     }
 
@@ -92,7 +92,7 @@ fn compile_seq(name : &str, song : &Expr, speed : f32, print : bool) -> std::io:
         let _ = file.write_all((
             format!("0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n")
         ).as_bytes())?;
-        if (print) {
+        if print {
             let _ = println!("0.5 => s.gain; {freq} => s.freq; {time} :: second => now;");
         }
     }
