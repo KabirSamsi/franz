@@ -13,24 +13,49 @@ pub type Pitch = (BasePitch, Accidental, i32);
 pub type Note = (Pitch, NoteLen);
 
 pub enum Param {
+    Var(Handle),
     KeySig(Vec<(BasePitch, Accidental)>),
     Tempo(Tempo),
-    TimeSig((i32, i32)),
-    Var(Handle, Box<Param>)
-}
+    TimeSig((i32, i32))
+};
+
+pub enum AExp {
+    Var(Handle),
+    Int(i32)
+    Plus(Box<Aexp>, Box<Aexp>),
+    Times(Box<Aexp>, Box<Aexp>),
+};
+
+pub enum BExp {
+    Var(Handle),
+    Bool(bool),
+    And(Box<BExp>, Box<Bexp>),
+    Or(Box<BExp>, Box<Bexp>),
+    Not(Box<BExp>)
+};
+
+pub enum RhythmComp {
+    Var(Handle),
+    Beat(Vec<NoteLen>),
+    Ternary(BExp, Box<RhythmComp>, Box<RhythmComp>),
+    Plus(Box<RhythmComp>, Box<RhythmComp>),
+    TimesL(AExp, Box<RhythmComp>),
+    TimesR(Box<RhythmComp>, AExp)
+};
+
+pub enum NoteComp {
+    Var(Handle),
+    NoteSeq(Vec<Note>),
+    Ternary(BExp, Box<NoteComp>, Box<NoteComp>),
+    Plus(Box<NoteComp>, Box<NoteComp>),
+    TimesL(AExp, Box<NoteComp>),
+    TimesR(Box<NoteComp>, AExp)
+};
 
 pub enum Expr {
-    Var(Handle, Box<Expr>),
-    Int(i32),
-    Bool(bool),
-    Motif(Handle, Vec<(Handle, Box<Expr>)>, Vec<NoteLen>),
+    Var(Handle),
     PitchList(Vec<Pitch>),
-    MotifApply(Box<Expr>, Box<Expr>),
-    MusicSeq(Vec<Note>),
-    Plus(Box<Expr>, Box<Expr>),
-    Times(Box<Expr>, Box<Expr>),
-    Ternary(Box<Expr>, Box<Expr>, Box<Expr>),
-    If(Box<Expr>, Box<Expr>, Box<Expr>)
-}
+    MotifApply(RhythmComp, NoteComp)
+};
 
 pub type Control = (Vec<Param>, Vec<Expr>, Expr);
