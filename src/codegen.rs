@@ -1,6 +1,6 @@
 use crate::{
     ast::{Accidental, BaseNoteLen, BasePitch, NoteComp},
-    error::{FranzError, FranzResult},
+    error::{FranzError, FranzResult}
 };
 use std::{fs::File, io::Write};
 
@@ -15,7 +15,7 @@ fn note_idx(noteval: &BasePitch, acc: &Accidental) -> i32 {
         BasePitch::F => 5,
         BasePitch::G => 7,
         BasePitch::A => 9,
-        BasePitch::B => 11,
+        BasePitch::B => 11
     };
 
     // Compute offset based on accidental
@@ -23,7 +23,7 @@ fn note_idx(noteval: &BasePitch, acc: &Accidental) -> i32 {
         Accidental::Flat => -1,
         Accidental::Natural => 0,
         Accidental::Blank => 0,
-        Accidental::Sharp => 1,
+        Accidental::Sharp => 1
     };
 
     note + accidental
@@ -37,7 +37,7 @@ fn length_idx(beatval: &BaseNoteLen) -> i32 {
         BaseNoteLen::Eighth => 0,
         BaseNoteLen::Qtr => 1,
         BaseNoteLen::Half => 2,
-        BaseNoteLen::Whole => 3,
+        BaseNoteLen::Whole => 3
     }
 }
 
@@ -47,10 +47,11 @@ fn process(note_wrapper: NoteComp, speed: f32) -> FranzResult<(f32, f32)> {
     let half: f32 = 0.5;
 
     // Match out note components. Compute frequency based on this.
-    let note: ((BasePitch, Accidental, _), (BaseNoteLen, _)) = match note_wrapper {
-        NoteComp::Note(n) => Ok(n),
-        _ => Err(FranzError::FlattenError),
-    }?;
+    let note: ((BasePitch, Accidental, _), (BaseNoteLen, _)) =
+        match note_wrapper {
+            NoteComp::Note(n) => Ok(n),
+            _ => Err(FranzError::FlattenError)
+        }?;
 
     let (pitch, length) = note;
     let (base, acc, octave) = pitch;
@@ -68,15 +69,20 @@ fn process(note_wrapper: NoteComp, speed: f32) -> FranzResult<(f32, f32)> {
 
     // Truncated floating-point precision calculation for time
     let time: f32 =
-        (1000.0 * speed * growth_factor * two.powf(length_idx(&beat) as f32)).round() / 1000.0;
+        (1000.0 * speed * growth_factor * two.powf(length_idx(&beat) as f32))
+            .round()
+            / 1000.0;
 
     Ok((freq, time))
 }
 
 // Compile an AST to a series of notes, and write to file
-pub fn compile_seq(name: &str, phrase: NoteComp, speed: f32, print: bool) -> FranzResult<()> {
+pub fn compile_seq(
+    name: &str, phrase: NoteComp, speed: f32, print: bool
+) -> FranzResult<()> {
     //Write results to file
-    let mut file = File::create(format!("chuck-programs/{name}.ck")).map_err(FranzError::IO)?;
+    let mut file = File::create(format!("chuck-programs/{name}.ck"))
+        .map_err(FranzError::IO)?;
     let (mut freq, mut time);
 
     let empty: Vec<NoteComp> = Vec::new();
@@ -84,7 +90,7 @@ pub fn compile_seq(name: &str, phrase: NoteComp, speed: f32, print: bool) -> Fra
     let notes = match phrase {
         //Extract out note sequence, if present
         NoteComp::Phrase(v) => v,
-        _ => empty,
+        _ => empty
     };
 
     let _ = file.write_all(b"SinOsc s => dac;\n");
@@ -97,13 +103,17 @@ pub fn compile_seq(name: &str, phrase: NoteComp, speed: f32, print: bool) -> Fra
         //Process each line and write it
 
         (freq, time) = process(note, speed)?;
-        file
-            .write_all(
-                (format!("0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n")).as_bytes(),
-            )
-            .map_err(FranzError::IO)?;
+        file.write_all(
+            (format!(
+                "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n"
+            ))
+            .as_bytes()
+        )
+        .map_err(FranzError::IO)?;
         if print {
-            println!("0.5 => s.gain; {freq} => s.freq; {time} :: second => now;");
+            println!(
+                "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;"
+            );
         }
     }
     Ok(())

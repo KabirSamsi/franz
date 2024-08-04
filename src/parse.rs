@@ -7,9 +7,7 @@ macro_rules! test3 {
     ($expr:expr) => {
         println!("parsing {}", stringify!($expr));
         assert_eq!(
-            parser::BeatParser::new()
-                .parse(stringify!($expr))
-                .unwrap(),
+            parser::BeatParser::new().parse(stringify!($expr)).unwrap(),
             $expr
         );
     };

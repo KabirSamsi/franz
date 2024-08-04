@@ -24,7 +24,7 @@ fn evalBExp(exp: &crate::BExp) -> bool {
         Var(handle) => evalBExp(lookupBExp(handle)),
         Not(e) => !(evalBExp(e)),
         And(e1, e2) => evalBExp(e1) & evalBExp(e2),
-        Or(e1, e2) => evalBExp(e1) | evalBExp(e2),
+        Or(e1, e2) => evalBExp(e1) | evalBExp(e2)
     };
 }
 
@@ -34,7 +34,7 @@ fn evalAExp(exp: &crate::AExp) -> i32 {
         Int(n) => n,
         Var(handle) => evalAExp(lookupAExp(handle)),
         Plus(e1, e2) => evalAExp(e1) + evalAExp(e2),
-        Times(e1, e2) => evalAExp(e1) * evalAExp(e2),
+        Times(e1, e2) => evalAExp(e1) * evalAExp(e2)
     };
 }
 
@@ -95,7 +95,7 @@ fn flattenNoteSeq(pitch: &crate::NoteComp) -> Vec<Note> {
 pub fn applyRhythm(phrase: &crate::Expr) -> &crate::NoteComp {
     let (mut rhythm, mut pitches) = match phrase {
         MotifApply(r, p) => (r, p),
-        Var(handle) => lookupMotif(handle),
+        Var(handle) => lookupMotif(handle)
     };
 
     let beats: Vec<NoteLen> = flattenRhythm(rhythm);
