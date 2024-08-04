@@ -1,7 +1,8 @@
 // Imports
 mod ast;
-mod songs;
 mod codegen;
+mod error;
+mod songs;
 
 fn main() {
     let _ = &codegen::compile_seq("innocent", songs::innocent(), 0.25, false);

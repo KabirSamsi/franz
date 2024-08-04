@@ -1,364 +1,327 @@
 /*  For now, just AST representations of what `franz-programs/<song>.fz`
-    should look like after parsing and full AST simplification. */
+should look like after parsing and full AST simplification. */
 
-use crate::ast;
-use crate::ast::BasePitch::*;
-use crate::ast::Accidental::*;
-use crate::ast::BaseNoteLen::*;
+use crate::{
+    ast,
+    ast::{Accidental::*, BaseNoteLen::*, BasePitch::*}
+};
+
+/// Generates a [`crate::ast::NoteComp`] through a comma-separated list of
+/// `[crate::ast::Note]`s.
+macro_rules! notes {
+    ($(($p1:expr, $p2:expr)),* $(,)?) => {
+        $crate::ast::NoteComp::Phrase(vec![
+            $($crate::ast::NoteComp::Note(($p1, $p2))),*
+        ])
+    };
+}
 
 pub fn innocent() -> ast::NoteComp {
-    let mut vec = Vec::new();
-
-    vec.push(((C, Natural, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 1)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Half, 1)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 1)));
-    vec.push(((B, Flat, 3), (Eighth, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 3), (Half, 1)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((A, Flat, 3), (Qtr, 1)));
-    vec.push(((G, Natural, 3), (Eighth, 0)));
-    vec.push(((A, Flat, 3), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 3), (Half, 1)));
-
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 1)));
-    vec.push(((A, Natural, 3), (Eighth, 0)));
-    vec.push(((A, Natural, 3), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Half, 1)));
-
-    vec.push(((C, Natural, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 1)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Half, 1)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 1)));
-    vec.push(((B, Flat, 3), (Eighth, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 3), (Half, 1)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((A, Flat, 3), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 1)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Half, 0)));
-
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((B, Natural, 3), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Half, 1)));
-
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 1)));
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Half, 1)));
-
-    vec.push(((B, Flat, 3), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 1)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Half, 0)));
-
-    vec.push(((C, Natural, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 1)));
-    vec.push(((B, Flat, 3), (Eighth, 0)));
-    vec.push(((B, Flat, 3), (Half, 0)));
-
-    vec.push(((A, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Whole, 0)));
-
-    vec.push(((C, Natural, 5), (Half, 0)));
-    vec.push(((B, Flat, 4), (Half, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Half, 0)));
-
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 1)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Whole, 0)));
-
-    vec.push(((C, Natural, 5), (Half, 0)));
-    vec.push(((B, Flat, 4), (Half, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Half, 0)));
-
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 1)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Whole, 0)));
-    
-    vec.push(((C, Natural, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 1)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Half, 1)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 1)));
-    vec.push(((B, Flat, 3), (Eighth, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 3), (Half, 1)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((A, Flat, 3), (Qtr, 1)));
-    vec.push(((G, Natural, 3), (Eighth, 0)));
-    vec.push(((A, Flat, 3), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 3), (Half, 1)));
-
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 1)));
-    vec.push(((A, Natural, 3), (Eighth, 0)));
-    vec.push(((A, Natural, 3), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Half, 1)));
-
-    vec.push(((C, Natural, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 1)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Half, 1)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 1)));
-    vec.push(((B, Flat, 3), (Eighth, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 3), (Half, 1)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((A, Flat, 3), (Qtr, 0)));
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 1)));
-    vec.push(((E, Flat, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((E, Flat, 4), (Half, 0)));
-
-    vec.push(((E, Flat, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 4), (Eighth, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((B, Natural, 3), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Half, 1)));
-
-    return ast::NoteComp::Phrase(vec);
+    notes![
+        ((C, Natural, 4), (Eighth, 0)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 1)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Half, 1)),
+        ((G, Natural, 3), (Qtr, 0)),
+        ((C, Natural, 4), (Qtr, 1)),
+        ((B, Flat, 3), (Eighth, 0)),
+        ((C, Natural, 4), (Qtr, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((B, Flat, 3), (Half, 1)),
+        ((G, Natural, 3), (Qtr, 0)),
+        ((A, Flat, 3), (Qtr, 1)),
+        ((G, Natural, 3), (Eighth, 0)),
+        ((A, Flat, 3), (Qtr, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 3), (Half, 1)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 1)),
+        ((A, Natural, 3), (Eighth, 0)),
+        ((A, Natural, 3), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Half, 1)),
+        ((C, Natural, 4), (Eighth, 0)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 1)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Half, 1)),
+        ((G, Natural, 3), (Qtr, 0)),
+        ((C, Natural, 4), (Qtr, 1)),
+        ((B, Flat, 3), (Eighth, 0)),
+        ((C, Natural, 4), (Qtr, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((B, Flat, 3), (Half, 1)),
+        ((G, Natural, 3), (Qtr, 0)),
+        ((A, Flat, 3), (Qtr, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((D, Natural, 4), (Qtr, 1)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Half, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((C, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((B, Natural, 3), (Qtr, 0)),
+        ((C, Natural, 4), (Half, 1)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((G, Natural, 4), (Qtr, 1)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Half, 1)),
+        ((B, Flat, 3), (Qtr, 0)),
+        ((E, Flat, 4), (Qtr, 1)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Half, 0)),
+        ((C, Natural, 4), (Eighth, 0)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((E, Flat, 4), (Qtr, 1)),
+        ((B, Flat, 3), (Eighth, 0)),
+        ((B, Flat, 3), (Half, 0)),
+        ((A, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Whole, 0)),
+        ((C, Natural, 5), (Half, 0)),
+        ((B, Flat, 4), (Half, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Half, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((F, Natural, 4), (Qtr, 1)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Whole, 0)),
+        ((C, Natural, 5), (Half, 0)),
+        ((B, Flat, 4), (Half, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Half, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((F, Natural, 4), (Qtr, 1)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((C, Natural, 4), (Whole, 0)),
+        ((C, Natural, 4), (Eighth, 0)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 1)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Half, 1)),
+        ((G, Natural, 3), (Qtr, 0)),
+        ((C, Natural, 4), (Qtr, 1)),
+        ((B, Flat, 3), (Eighth, 0)),
+        ((C, Natural, 4), (Qtr, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((B, Flat, 3), (Half, 1)),
+        ((G, Natural, 3), (Qtr, 0)),
+        ((A, Flat, 3), (Qtr, 1)),
+        ((G, Natural, 3), (Eighth, 0)),
+        ((A, Flat, 3), (Qtr, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 3), (Half, 1)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 1)),
+        ((A, Natural, 3), (Eighth, 0)),
+        ((A, Natural, 3), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Half, 1)),
+        ((C, Natural, 4), (Eighth, 0)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 1)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Half, 1)),
+        ((G, Natural, 3), (Qtr, 0)),
+        ((C, Natural, 4), (Qtr, 1)),
+        ((B, Flat, 3), (Eighth, 0)),
+        ((C, Natural, 4), (Qtr, 0)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((B, Flat, 3), (Half, 1)),
+        ((G, Natural, 3), (Qtr, 0)),
+        ((A, Flat, 3), (Qtr, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((D, Natural, 4), (Qtr, 1)),
+        ((E, Flat, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((E, Flat, 4), (Half, 0)),
+        ((E, Flat, 4), (Eighth, 0)),
+        ((D, Natural, 4), (Eighth, 0)),
+        ((C, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((B, Natural, 3), (Qtr, 0)),
+        ((C, Natural, 4), (Half, 1))
+    ]
 }
 
 pub fn anthem() -> ast::NoteComp {
-    let mut vec = Vec::new();
-
-    vec.push(((F, Natural, 4), (Eighth, 1)));
-    vec.push(((D, Natural, 4), (Sixteenth, 0)));
-    vec.push(((B, Flat, 3), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Half, 0)));
-
-    vec.push(((D, Natural, 5), (Eighth, 1)));
-    vec.push(((C, Natural, 5), (Sixteenth, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Natural, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Half, 0)));
-
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 5), (Qtr, 1)));
-    vec.push(((C, Natural, 5), (Eighth, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((A, Natural, 4), (Half, 0)));
-
-    vec.push(((G, Natural, 4), (Eighth, 1)));
-    vec.push(((A, Natural, 4), (Sixteenth, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 3), (Qtr, 0)));
-
-    vec.push(((F, Natural, 4), (Eighth, 1)));
-    vec.push(((D, Natural, 4), (Sixteenth, 0)));
-    vec.push(((B, Flat, 3), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Half, 0)));
-
-    vec.push(((D, Natural, 5), (Eighth, 1)));
-    vec.push(((C, Natural, 5), (Sixteenth, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Natural, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Half, 0)));
-
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((D, Natural, 5), (Qtr, 1)));
-    vec.push(((C, Natural, 5), (Eighth, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((A, Natural, 4), (Half, 0)));
-
-    vec.push(((G, Natural, 4), (Eighth, 1)));
-    vec.push(((A, Natural, 4), (Sixteenth, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 3), (Qtr, 0)));
-
-    vec.push(((D, Natural, 5), (Eighth, 1)));
-    vec.push(((D, Natural, 5), (Sixteenth, 0)));
-    vec.push(((D, Natural, 5), (Qtr, 0)));
-    vec.push(((E, Flat, 5), (Qtr, 0)));
-    vec.push(((F, Natural, 5), (Qtr, 0)));
-    vec.push(((F, Natural, 5), (Half, 0)));
-
-    vec.push(((E, Flat, 5), (Eighth, 1)));
-    vec.push(((D, Natural, 5), (Sixteenth, 0)));
-    vec.push(((C, Natural, 5), (Qtr, 0)));
-    vec.push(((D, Natural, 5), (Qtr, 0)));
-    vec.push(((E, Flat, 5), (Qtr, 0)));
-    vec.push(((E, Flat, 5), (Half, 0)));
-
-    vec.push(((E, Flat, 5), (Qtr, 0)));
-    vec.push(((D, Natural, 5), (Qtr, 1)));
-    vec.push(((C, Natural, 5), (Eighth, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((A, Natural, 4), (Half, 0)));
-
-    vec.push(((G, Natural, 4), (Eighth, 0)));
-    vec.push(((A, Natural, 4), (Eighth, 1)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((D, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Natural, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Half, 0)));
-
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Eighth, 0)));
-    vec.push(((A, Natural, 4), (Eighth, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((C, Natural, 5), (Qtr, 0)));
-    vec.push(((E, Flat, 5), (Eighth, 0)));
-    vec.push(((D, Natural, 5), (Eighth, 0)));
-    vec.push(((C, Natural, 5), (Eighth, 0)));
-    vec.push(((B, Flat, 4), (Eighth, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 0)));
-    vec.push(((A, Natural, 4), (Qtr, 0)));
-
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((F, Natural, 4), (Eighth, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 1)));
-    vec.push(((C, Natural, 5), (Eighth, 0)));
-    vec.push(((D, Natural, 5), (Eighth, 0)));
-    vec.push(((E, Flat, 5), (Eighth, 0)));
-    vec.push(((F, Natural, 5), (Half, 0)));
-
-    vec.push(((B, Flat, 4), (Eighth, 0)));
-    vec.push(((C, Natural, 5), (Eighth, 0)));
-    vec.push(((D, Natural, 5), (Qtr, 1)));
-    vec.push(((E, Flat, 5), (Eighth, 0)));
-    vec.push(((C, Natural, 5), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Whole, 0)));
-
-    return ast::NoteComp::Phrase(vec);
+    notes![
+        ((F, Natural, 4), (Eighth, 1)),
+        ((D, Natural, 4), (Sixteenth, 0)),
+        ((B, Flat, 3), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((B, Flat, 4), (Half, 0)),
+        ((D, Natural, 5), (Eighth, 1)),
+        ((C, Natural, 5), (Sixteenth, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((E, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Half, 0)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((D, Natural, 5), (Qtr, 1)),
+        ((C, Natural, 5), (Eighth, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((A, Natural, 4), (Half, 0)),
+        ((G, Natural, 4), (Eighth, 1)),
+        ((A, Natural, 4), (Sixteenth, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((B, Flat, 3), (Qtr, 0)),
+        ((F, Natural, 4), (Eighth, 1)),
+        ((D, Natural, 4), (Sixteenth, 0)),
+        ((B, Flat, 3), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((B, Flat, 4), (Half, 0)),
+        ((D, Natural, 5), (Eighth, 1)),
+        ((C, Natural, 5), (Sixteenth, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((E, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Half, 0)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((D, Natural, 5), (Qtr, 1)),
+        ((C, Natural, 5), (Eighth, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((A, Natural, 4), (Half, 0)),
+        ((G, Natural, 4), (Eighth, 1)),
+        ((A, Natural, 4), (Sixteenth, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((B, Flat, 3), (Qtr, 0)),
+        ((D, Natural, 5), (Eighth, 1)),
+        ((D, Natural, 5), (Sixteenth, 0)),
+        ((D, Natural, 5), (Qtr, 0)),
+        ((E, Flat, 5), (Qtr, 0)),
+        ((F, Natural, 5), (Qtr, 0)),
+        ((F, Natural, 5), (Half, 0)),
+        ((E, Flat, 5), (Eighth, 1)),
+        ((D, Natural, 5), (Sixteenth, 0)),
+        ((C, Natural, 5), (Qtr, 0)),
+        ((D, Natural, 5), (Qtr, 0)),
+        ((E, Flat, 5), (Qtr, 0)),
+        ((E, Flat, 5), (Half, 0)),
+        ((E, Flat, 5), (Qtr, 0)),
+        ((D, Natural, 5), (Qtr, 1)),
+        ((C, Natural, 5), (Eighth, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((A, Natural, 4), (Half, 0)),
+        ((G, Natural, 4), (Eighth, 0)),
+        ((A, Natural, 4), (Eighth, 1)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((D, Natural, 4), (Qtr, 0)),
+        ((E, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Half, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((B, Flat, 4), (Eighth, 0)),
+        ((A, Natural, 4), (Eighth, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((C, Natural, 5), (Qtr, 0)),
+        ((E, Flat, 5), (Eighth, 0)),
+        ((D, Natural, 5), (Eighth, 0)),
+        ((C, Natural, 5), (Eighth, 0)),
+        ((B, Flat, 4), (Eighth, 0)),
+        ((B, Flat, 4), (Qtr, 0)),
+        ((A, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((F, Natural, 4), (Eighth, 0)),
+        ((B, Flat, 4), (Qtr, 1)),
+        ((C, Natural, 5), (Eighth, 0)),
+        ((D, Natural, 5), (Eighth, 0)),
+        ((E, Flat, 5), (Eighth, 0)),
+        ((F, Natural, 5), (Half, 0)),
+        ((B, Flat, 4), (Eighth, 0)),
+        ((C, Natural, 5), (Eighth, 0)),
+        ((D, Natural, 5), (Qtr, 1)),
+        ((E, Flat, 5), (Eighth, 0)),
+        ((C, Natural, 5), (Qtr, 0)),
+        ((B, Flat, 4), (Whole, 0)),
+    ]
 }
 
 pub fn apprasionata() -> ast::NoteComp {
-    let mut vec = Vec::new();
-
-    vec.push(((C, Natural, 3), (Qtr, 0)));
-    vec.push(((F, Natural, 3), (Qtr, 0)));
-    vec.push(((A, Flat, 3), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 0)));
-    vec.push(((A, Flat, 4), (Qtr, 1)));
-    vec.push(((G, Natural, 4), (Sixteenth, 0)));
-    vec.push(((F, Natural, 4), (Sixteenth, 0)));
-    vec.push(((E, Natural, 4), (Sixteenth, 0)));
-    vec.push(((F, Natural, 4), (Half, 0)));
-
-    vec.push(((G, Natural, 3), (Qtr, 0)));
-    vec.push(((C, Natural, 4), (Qtr, 0)));
-    vec.push(((E, Natural, 4), (Qtr, 0)));
-    vec.push(((G, Natural, 4), (Qtr, 0)));
-    vec.push(((B, Flat, 4), (Qtr, 1)));
-    vec.push(((A, Flat, 4), (Sixteenth, 0)));
-    vec.push(((G, Natural, 4), (Sixteenth, 0)));
-    vec.push(((F, Natural, 4), (Sixteenth, 0)));
-    vec.push(((G, Natural, 4), (Half, 0)));
-
-    vec.push(((A, Flat, 4), (Qtr, 1)));
-    vec.push(((G, Natural, 4), (Sixteenth, 0)));
-    vec.push(((F, Natural, 4), (Sixteenth, 0)));
-    vec.push(((E, Natural, 4), (Sixteenth, 0)));
-    vec.push(((F, Natural, 4), (Half, 0)));
-
-    vec.push(((B, Flat, 4), (Qtr, 1)));
-    vec.push(((A, Flat, 4), (Sixteenth, 0)));
-    vec.push(((G, Natural, 4), (Sixteenth, 0)));
-    vec.push(((F, Natural, 4), (Sixteenth, 0)));
-    vec.push(((G, Natural, 4), (Half, 0)));
-
-    vec.push(((C, Natural, 5), (Half, 0)));
-    vec.push(((B, Flat, 4), (Eighth, 0)));
-    vec.push(((A, Flat, 4), (Eighth, 0)));
-    vec.push(((G, Natural, 4), (Eighth, 0)));
-    vec.push(((F, Natural, 4), (Eighth, 1)));
-    vec.push(((E, Natural, 4), (Sixteenth, 0)));
-    vec.push(((F, Natural, 4), (Sixteenth, 0)));
-    vec.push(((G, Natural, 4), (Sixteenth, 0)));
-    vec.push(((F, Natural, 4), (Qtr, 1)));
-    vec.push(((E, Natural, 4), (Half, 0)));
-
-    return ast::NoteComp::Phrase(vec);
+    notes![
+        ((C, Natural, 3), (Qtr, 0)),
+        ((F, Natural, 3), (Qtr, 0)),
+        ((A, Flat, 3), (Qtr, 0)),
+        ((C, Natural, 4), (Qtr, 0)),
+        ((F, Natural, 4), (Qtr, 0)),
+        ((A, Flat, 4), (Qtr, 1)),
+        ((G, Natural, 4), (Sixteenth, 0)),
+        ((F, Natural, 4), (Sixteenth, 0)),
+        ((E, Natural, 4), (Sixteenth, 0)),
+        ((F, Natural, 4), (Half, 0)),
+        ((G, Natural, 3), (Qtr, 0)),
+        ((C, Natural, 4), (Qtr, 0)),
+        ((E, Natural, 4), (Qtr, 0)),
+        ((G, Natural, 4), (Qtr, 0)),
+        ((B, Flat, 4), (Qtr, 1)),
+        ((A, Flat, 4), (Sixteenth, 0)),
+        ((G, Natural, 4), (Sixteenth, 0)),
+        ((F, Natural, 4), (Sixteenth, 0)),
+        ((G, Natural, 4), (Half, 0)),
+        ((A, Flat, 4), (Qtr, 1)),
+        ((G, Natural, 4), (Sixteenth, 0)),
+        ((F, Natural, 4), (Sixteenth, 0)),
+        ((E, Natural, 4), (Sixteenth, 0)),
+        ((F, Natural, 4), (Half, 0)),
+        ((B, Flat, 4), (Qtr, 1)),
+        ((A, Flat, 4), (Sixteenth, 0)),
+        ((G, Natural, 4), (Sixteenth, 0)),
+        ((F, Natural, 4), (Sixteenth, 0)),
+        ((G, Natural, 4), (Half, 0)),
+        ((C, Natural, 5), (Half, 0)),
+        ((B, Flat, 4), (Eighth, 0)),
+        ((A, Flat, 4), (Eighth, 0)),
+        ((G, Natural, 4), (Eighth, 0)),
+        ((F, Natural, 4), (Eighth, 1)),
+        ((E, Natural, 4), (Sixteenth, 0)),
+        ((F, Natural, 4), (Sixteenth, 0)),
+        ((G, Natural, 4), (Sixteenth, 0)),
+        ((F, Natural, 4), (Qtr, 1)),
+        ((E, Natural, 4), (Half, 0)),
+    ]
 }

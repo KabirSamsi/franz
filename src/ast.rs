@@ -1,7 +1,34 @@
-pub enum BasePitch {A, B, C, D, E, F, G, Rest}
-pub enum Accidental{Sharp, Flat, Natural, Blank}
-pub enum BaseNoteLen{Ts, Sixteenth, Eighth, Qtr, Half, Whole}
-pub enum Tempo{Lento, Adagio, Andante, Allegro, Presto}
+pub enum BasePitch {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    Rest
+}
+pub enum Accidental {
+    Sharp,
+    Flat,
+    Natural,
+    Blank
+}
+pub enum BaseNoteLen {
+    Ts,
+    Sixteenth,
+    Eighth,
+    Qtr,
+    Half,
+    Whole
+}
+pub enum Tempo {
+    Lento,
+    Adagio,
+    Andante,
+    Allegro,
+    Presto
+}
 
 // Type synonyms
 pub type Dots = i32;
@@ -23,7 +50,7 @@ pub enum AExp {
     Var(Handle),
     Int(i32),
     Plus(Box<AExp>, Box<AExp>),
-    Times(Box<AExp>, Box<AExp>),
+    Times(Box<AExp>, Box<AExp>)
 }
 
 pub enum BExp {
@@ -40,24 +67,26 @@ pub enum RhythmComp {
     Beat(NoteLen),
     Ternary(BExp, Box<RhythmComp>, Box<RhythmComp>),
     Plus(Box<RhythmComp>, Box<RhythmComp>),
-    Times(AExp, Box<RhythmComp>)
-    BeatSequence(Vec<Box<RhythmComp>>)
+    Times(AExp, Box<RhythmComp>),
+    BeatSequence(Vec<RhythmComp>)
 }
 
 pub enum PitchComp {
     Var(Handle),
-    Phrase(Vec<Pitch>),
+    Pitch(Pitch),
     Ternary(BExp, Box<PitchComp>, Box<PitchComp>),
     Plus(Box<PitchComp>, Box<PitchComp>),
-    Times(AExp, Box<PitchComp>)
+    Times(AExp, Box<PitchComp>),
+    PitchSeq(Vec<PitchComp>)
 }
 
 pub enum NoteComp {
     Var(Handle),
-    Phrase(Vec<Note>),
+    Note(Note),
     Ternary(BExp, Box<NoteComp>, Box<NoteComp>),
     Plus(Box<NoteComp>, Box<NoteComp>),
-    Times(AExp, Box<NoteComp>)
+    Times(AExp, Box<NoteComp>),
+    Phrase(Vec<NoteComp>)
 }
 
 pub enum Expr {
