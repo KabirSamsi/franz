@@ -14,8 +14,9 @@ macro_rules! notes {
 }
 
 fn main() {
+    let _ = parse::parse("3");
     notes![innocent, 0.25];
-    notes![anthem, 0.25];
-    notes![apprasionata, 0.25];
-    notes![allstar, 0.25];
+    notes![anthem, 0.3];
+    notes![apprasionata, 0.15];
+    notes![darthvader, 0.3];
 }

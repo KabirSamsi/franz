@@ -1,5 +1,5 @@
 use crate::{
-    ast::{Accidental, BaseNoteLen, BasePitch, NoteComp},
+    ast::{AExp, Accidental, BaseNoteLen, BasePitch, NoteComp},
     error::{FranzError, FranzResult}
 };
 use std::{fs::File, io::Write};
@@ -54,14 +54,28 @@ fn process(note_wrapper: NoteComp, speed: f32) -> FranzResult<(f32, f32)> {
         }?;
 
     let (pitch, length) = note;
-    let (base, acc, octave) = pitch;
+    let (base, acc, octave_exp) = pitch;
+
+    // Compute exact length of beat based on note value and dots
+    let (beat, dots_exp) = length;
+
+    //Ensure octave and dots are in simplified form (from prior parsing)
+    let octave = match octave_exp {
+        //Extract out parsed octave
+        AExp::Int(n) => Ok(n),
+        _ => Err(FranzError::FlattenError)
+    }?;
+
+    let dots = match dots_exp {
+        //Extract out parsed octave
+        AExp::Int(n) => Ok(n),
+        _ => Err(FranzError::FlattenError)
+    }?;
 
     let idx = 12 * (octave + 1) + note_idx(&base, &acc);
     let diff: f32 = (idx - 69) as f32;
     let freq: f32 = 440.0 * two.powf(diff / 12.0);
 
-    // Compute exact length of beat based on note value and dots
-    let (beat, dots) = length;
     let mut growth_factor: f32 = 1.0;
     for i in 1..(dots + 1) {
         growth_factor += half.powf(i as f32);
@@ -85,10 +99,10 @@ pub fn compile_seq(
         .map_err(FranzError::IO)?;
     let (mut freq, mut time);
 
-    let empty: Vec<((BasePitch, Accidental, i32), (BaseNoteLen, i32))> =
+    let empty: Vec<((BasePitch, Accidental, AExp), (BaseNoteLen, AExp))> =
         Vec::new();
 
-    let notes: Vec<((BasePitch, Accidental, i32), (BaseNoteLen, i32))> =
+    let notes: Vec<((BasePitch, Accidental, AExp), (BaseNoteLen, AExp))> =
         match phrase {
             //Extract out note sequence, if present
             NoteComp::Phrase(v) => v,

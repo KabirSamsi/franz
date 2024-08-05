@@ -1,14 +1,14 @@
+use crate::ast;
 use lalrpop_util::lalrpop_mod;
 
-lalrpop_mod!(pub parser); // synthesized by LALRPOP
+lalrpop_mod!(pub parser);
 
-macro_rules! test3 {
-    ($expr:expr) => {
-        println!("parsing {}", stringify!($expr));
-        parser::BeatParser::new().parse(stringify!($expr)).unwrap()
+macro_rules! parse_assistant {
+    ($parser_type:ident, $sequence:expr) => {
+        parser::$parser_type::new().parse($sequence).unwrap()
     };
 }
 
-fn parse() {
-    test3!("q");
+pub fn parse(sequence: &str) -> ast::AExp {
+    parse_assistant!(AExpParser, sequence)
 }

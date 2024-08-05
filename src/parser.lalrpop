@@ -1,8 +1,5 @@
 use std::str::*;
-use crate::ast::{Pitch, KeySigPitch, NoteLen, Note};
-use crate::ast::BasePitch;
-use crate::ast::Accidental;
-use crate::ast::BaseNoteLen;
+use crate::ast::{Pitch, KeySigPitch, NoteLen, Note, BasePitch, Accidental, BaseNoteLen, AExp, BExp, Tempo};
 
 grammar;
 
@@ -11,8 +8,8 @@ pub Note : Note = {
 };
 
 pub Pitch: Pitch = {
-    <note:NoteName> <n:Num> => (note, Accidental::Blank, n),
-    <note:NoteName> <n:Num> "_" <acc:Accidental> => (note, acc, n)
+    <note:NoteName> <n:AExp> => (note, Accidental::Blank, n),
+    <note:NoteName> <n:AExp> "_" <acc:Accidental> => (note, acc, n)
 };
 
 pub KeySigPitch: KeySigPitch = {
@@ -34,13 +31,39 @@ pub NoteLen: NoteLen = {
     <b:Beat> <dots:r"[.]*"> => (b, String::from(dots).chars().count().try_into().unwrap())
 };
 
+pub BExp: BExp = {
+    #[precedence(level="0")]
+    "true" => BExp::True,
+    "false" => BExp::False,
+
+    #[precedence(level="1")]
+    "!" <e:BExp> => BExp::Not(Box::new(e)),
+
+    #[precedence(level="2")] #[assoc(side="left")]
+    <e1:BExp> "||" <e2:BExp> => BExp::Or(Box::new(e1), Box::new(e2)),
+
+    #[precedence(level="3")] #[assoc(side="left")]
+    <e1:BExp> "&&" <e2:BExp> => BExp::And(Box::new(e1), Box::new(e2)),
+};
+
+pub AExp: AExp = {
+    #[precedence(level="0")]
+    r"[0-9]+" => AExp::Int(i32::from_str(<>).unwrap()),
+
+    #[precedence(level="1")] #[assoc(side="left")] 
+    <e1:AExp> "+" <e2:AExp> => AExp::Plus(Box::new(e1), Box::new(e2)),
+
+    #[precedence(level="2")] #[assoc(side="left")]
+    <e1:AExp> "*" <e2:AExp> => AExp::Times(Box::new(e1), Box::new(e2))
+};
+
 pub Beat: BaseNoteLen = {
-    "t" => BaseNoteLen::Ts,
-    "s" => BaseNoteLen::Sixteenth,
+    "ts" => BaseNoteLen::Ts,
+    "sx" => BaseNoteLen::Sixteenth,
     "et" => BaseNoteLen::Eighth,
-    "q" => BaseNoteLen::Qtr,
-    "h" => BaseNoteLen::Half,
-    "w" => BaseNoteLen::Whole
+    "qt" => BaseNoteLen::Qtr,
+    "hf" => BaseNoteLen::Half,
+    "wh" => BaseNoteLen::Whole
 };
 
 pub Accidental: Accidental = {
@@ -49,6 +72,10 @@ pub Accidental: Accidental = {
     "ntl" => Accidental::Natural,
 };
 
-pub Num: i32 = {
-    r"[0-9]+" => i32::from_str(<>).unwrap()
-};
+pub Tempo: Tempo = {
+    "Presto" => Tempo::Presto,
+    "Allegro" => Tempo::Allegro,
+    "Andante" => Tempo::Andante,
+    "Adagio" => Tempo::Adagio,
+    "Lento" => Tempo::Lento
+}

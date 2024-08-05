@@ -1,3 +1,5 @@
+pub type Handle = String;
+
 pub enum BasePitch {
     A,
     B,
@@ -30,22 +32,6 @@ pub enum Tempo {
     Presto
 }
 
-// Type synonyms
-pub type Dots = i32;
-pub type Handle = String;
-
-pub type NoteLen = (BaseNoteLen, Dots);
-pub type KeySigPitch = (BasePitch, Accidental);
-pub type Pitch = (BasePitch, Accidental, i32);
-pub type Note = (Pitch, NoteLen);
-
-pub enum Param {
-    Var(Handle),
-    KeySig(Vec<KeySigPitch>),
-    Tempo(Tempo),
-    TimeSig((i32, i32))
-}
-
 pub enum AExp {
     Var(Handle),
     Int(i32),
@@ -60,6 +46,20 @@ pub enum BExp {
     And(Box<BExp>, Box<BExp>),
     Or(Box<BExp>, Box<BExp>),
     Not(Box<BExp>)
+}
+
+// Type synonyms
+pub type Dots = AExp;
+pub type NoteLen = (BaseNoteLen, Dots);
+pub type KeySigPitch = (BasePitch, Accidental);
+pub type Pitch = (BasePitch, Accidental, AExp);
+pub type Note = (Pitch, NoteLen);
+
+pub enum Param {
+    Var(Handle),
+    KeySig(Vec<KeySigPitch>),
+    Tempo(Tempo),
+    TimeSig((AExp, AExp))
 }
 
 pub enum RhythmComp {
