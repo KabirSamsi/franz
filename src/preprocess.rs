@@ -1,111 +1,132 @@
-use crate::ast::{AExp::*, BExp::*, NoteComp::*, RhythmComp::*, *};
+use crate::ast::{
+    AExp::{self, *},
+    BExp::{self, *},
+    Expr, NoteComp, NoteLen, Pitch, PitchComp,
+    RhythmComp::{self, *}
+};
 
-fn lookupRhythm(name: &crate::Handle) -> &crate::RhythmComp {
-    // TODO
-    return RhythmComp::Handle("Todo");
+fn lookup_bexp(name: crate::ast::Handle) -> crate::ast::BExp {
+    //TODO
+    BExp::True
 }
 
-fn lookupBExp(name: &crate::Handle) -> &crate::BExp {
+fn lookup_aexp(name: crate::ast::Handle) -> crate::ast::AExp {
     //TODO
-    return BExp::True;
+    AExp::Int(0)
 }
 
 // Lookup motif based on handle
-fn lookupMotif(name: &crate::Handle) -> (Vec<NoteLen>, Vec<Pitch>) {
+fn lookup_motif(name: crate::ast::Handle) -> (Vec<NoteLen>) {
     // TODO
-    return (Vec::new(), Vec::new());
+    Vec::new()
+}
+
+fn lookup_rhythm(name: crate::ast::Handle) -> crate::ast::RhythmComp {
+    // TODO
+    RhythmComp::Var("Todo".to_string())
 }
 
 // Evaluate a boolean expression to a boolean
-fn evalBExp(exp: &crate::BExp) -> bool {
-    return match e {
+fn eval_bexp(exp: &crate::ast::BExp) -> bool {
+    match exp {
         True => true,
         False => false,
-        Var(handle) => evalBExp(lookupBExp(handle)),
-        Not(e) => !(evalBExp(e)),
-        And(e1, e2) => evalBExp(e1) & evalBExp(e2),
-        Or(e1, e2) => evalBExp(e1) | evalBExp(e2)
-    };
+        BExp::Var(handle) => eval_bexp(lookup_bexp(handle)),
+        Not(e) => !(eval_bexp(e)),
+        And(e1, e2) => eval_bexp(e1) & eval_bexp(e2),
+        Or(e1, e2) => eval_bexp(e1) | eval_bexp(e2)
+    }
 }
 
 // Evaluate an arithmetic expression to an integer
-fn evalAExp(exp: &crate::AExp) -> i32 {
-    return match e {
-        Int(n) => n,
-        Var(handle) => evalAExp(lookupAExp(handle)),
-        Plus(e1, e2) => evalAExp(e1) + evalAExp(e2),
-        Times(e1, e2) => evalAExp(e1) * evalAExp(e2)
-    };
+fn eval_aexp(exp: &crate::ast::AExp) -> i32 {
+    match exp {
+        Int(n) => *n,
+        AExp::Var(handle) => eval_aexp(lookup_aexp(handle)),
+        AExp::Plus(e1, e2) => eval_aexp(e1) + eval_aexp(e2),
+        AExp::Times(e1, e2) => eval_aexp(e1) * eval_aexp(e2)
+    }
 }
 
 // Transform rhythm component into just a series of beats
-fn flattenRhythm(rhythm: &crate::RhythmComp) -> Vec<NoteLen> {
-    return match rhythm {
-        Var(handle) => lookupRhythm(handle), //Variable
-        Beat(beat) => vec![beat],            //Single Beat
+fn flatten_rhythm(rhythm: crate::ast::RhythmComp) -> Vec<NoteLen> {
+    match rhythm {
+        BeatSequence(beats) => beats,
+        Beat(beat) => vec![beat], //Single Beat
 
-        Plus(comp1, comp2) => {
-            //Add two rhythm sequences together
-            Beat(vec![flattenRhythm(comp1), flattenRhythm(comp2)].concat())
+        RhythmComp::Var(handle) => {
+            /* Variable */
+            flatten_rhythm(lookup_rhythm(&handle))
         }
 
-        Times(n, comp) => {
+        RhythmComp::Plus(comp1, comp2) => {
+            //Add two rhythm sequences together
+            let sum = flatten_rhythm(*comp1);
+            sum.extend(flatten_rhythm(*comp2));
+            sum
+        }
+
+        RhythmComp::Times(n, comp) => {
             //Multiply a rhythm sequence n times
-            let mut result = flattenRhythm(comp);
+            let mut result = flatten_rhythm(*comp);
             let extension = result.clone();
-            for i in 0..n {
+            for i in 0..eval_aexp(&n) {
                 result.extend(extension);
             }
             result
         }
 
-        Ternary(b, comp1, comp2) => {
+        RhythmComp::Ternary(b, comp1, comp2) => {
             //Ternary sequence to determine which sequence to hold
-            if evalBExp(b) {
-                flattenRhythm(comp1);
+            if eval_bexp(&b) {
+                flatten_rhythm(*comp1)
             } else {
-                flattenRhythm(comp2);
+                flatten_rhythm(*comp2)
             }
         }
 
-        BeatSequence(components) => {
+        RhythmComp::RhythmSequence(components) => {
             //Flatten a collection of rhythm rules into one sequence
             let result: Vec<NoteLen> = Vec::new();
             for i in 0..components.len() {
-                result.extend(flattenRhythm(components[i]));
+                result.extend(flatten_rhythm(components[i]));
             }
             result
         }
-    };
+    }
 }
 
 // Transform pitch component into a series of pitches
-fn flattenPitches(pitch: &crate::PitchComp) -> Vec<Pitch> {
+fn flatten_pitches(pitch: crate::ast::PitchComp) -> Vec<Pitch> {
     // TODO
-    return Vec::new();
+    Vec::new()
 }
 
 // Transform note component into a series of notes
-fn flattenNoteSeq(pitch: &crate::NoteComp) -> Vec<Note> {
+fn flatten_note_seq(pitch: crate::ast::NoteComp) -> Vec<crate::ast::Note> {
     // TODO
-    return Vec::new();
+    Vec::new()
 }
 
 // Apply a rhythm sequence to a pitch sequence to generate a note phrase
-pub fn applyRhythm(phrase: &crate::Expr) -> &crate::NoteComp {
-    let (mut rhythm, mut pitches) = match phrase {
-        MotifApply(r, p) => (r, p),
-        Var(handle) => lookupMotif(handle)
+pub fn apply_rhythm(phrase: &crate::ast::Expr) -> &crate::ast::NoteComp {
+    let (rhythm, pitches) = match phrase {
+        Expr::MotifApply(r, p) => (r, p),
+        Expr::Var(handle) => {
+            let rhythm = RhythmComp::Var(handle.clone());
+            let pitches = PitchComp::Var(handle.clone());
+            (&rhythm, &pitches)
+        }
     };
 
-    let beats: Vec<NoteLen> = flattenRhythm(rhythm);
-    let pitches: Vec<Pitch> = flattenPitches(pitches);
+    let beats: Vec<NoteLen> = flatten_rhythm(*rhythm);
+    let pitches: Vec<Pitch> = flatten_pitches(*pitches);
     assert!(beats.len() == pitches.len());
 
-    let notes: Vec<Note> = Vec::new();
+    let notes: Vec<crate::ast::Note> = Vec::new();
     for i in 0..beats.len() {
-        notes.push((beats[i], pitches[i]));
+        notes.push((pitches[i], beats[i]));
     }
 
-    return NoteComp::Phrase(notes);
+    &NoteComp::Phrase(notes)
 }
