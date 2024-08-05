@@ -24,6 +24,7 @@ pub enum BaseNoteLen {
     Half,
     Whole
 }
+
 pub enum Tempo {
     Lento,
     Adagio,
@@ -33,14 +34,14 @@ pub enum Tempo {
 }
 
 pub enum AExp {
-    Var(Handle),
+    Assign(Handle, Box<AExp>),
     Int(i32),
     Plus(Box<AExp>, Box<AExp>),
     Times(Box<AExp>, Box<AExp>)
 }
 
 pub enum BExp {
-    Var(Handle),
+    Assign(Handle, Box<BExp>),
     True,
     False,
     And(Box<BExp>, Box<BExp>),
