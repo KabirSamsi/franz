@@ -57,16 +57,10 @@ fn process(note_wrapper: NoteComp, speed: f32) -> FranzResult<(f32, f32)> {
     let (base, acc, octave_exp) = pitch;
 
     // Compute exact length of beat based on note value and dots
-    let (beat, dots_exp) = length;
+    let (beat, dots) = length;
 
     //Ensure octave and dots are in simplified form (from prior parsing)
     let octave = match octave_exp {
-        //Extract out parsed octave
-        AExp::Int(n) => Ok(n),
-        _ => Err(FranzError::FlattenError)
-    }?;
-
-    let dots = match dots_exp {
         //Extract out parsed octave
         AExp::Int(n) => Ok(n),
         _ => Err(FranzError::FlattenError)
@@ -99,10 +93,10 @@ pub fn compile_seq(
         .map_err(FranzError::IO)?;
     let (mut freq, mut time);
 
-    let empty: Vec<((BasePitch, Accidental, AExp), (BaseNoteLen, AExp))> =
+    let empty: Vec<((BasePitch, Accidental, AExp), (BaseNoteLen, i32))> =
         Vec::new();
 
-    let notes: Vec<((BasePitch, Accidental, AExp), (BaseNoteLen, AExp))> =
+    let notes: Vec<((BasePitch, Accidental, AExp), (BaseNoteLen, i32))> =
         match phrase {
             //Extract out note sequence, if present
             NoteComp::Phrase(v) => v,

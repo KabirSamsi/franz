@@ -14,7 +14,8 @@ macro_rules! notes {
 }
 
 fn main() {
-    let _ = parse::parse("3");
+    let _ = parse::parse_bexp("!true && true");
+    let _ = parse::parse_aexp("12 + 20");
     notes![innocent, 0.25];
     notes![anthem, 0.3];
     notes![apprasionata, 0.15];

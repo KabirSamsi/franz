@@ -9,6 +9,10 @@ macro_rules! parse_assistant {
     };
 }
 
-pub fn parse(sequence: &str) -> ast::AExp {
+pub fn parse_aexp(sequence: &str) -> ast::AExp {
     parse_assistant!(AExpParser, sequence)
+}
+
+pub fn parse_bexp(sequence: &str) -> ast::BExp {
+    parse_assistant!(BExpParser, sequence)
 }
