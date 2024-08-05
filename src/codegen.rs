@@ -93,15 +93,13 @@ pub fn compile_seq(
         .map_err(FranzError::IO)?;
     let (mut freq, mut time);
 
-    let empty: Vec<((BasePitch, Accidental, AExp), (BaseNoteLen, i32))> =
-        Vec::new();
+    let empty = Vec::new();
 
-    let notes: Vec<((BasePitch, Accidental, AExp), (BaseNoteLen, i32))> =
-        match phrase {
-            //Extract out note sequence, if present
-            NoteComp::Phrase(v) => v,
-            _ => empty
-        };
+    let notes = match phrase {
+        //Extract out note sequence, if present
+        NoteComp::Phrase(v) => v,
+        _ => empty
+    };
 
     let _ = file.write_all(
         format!(
