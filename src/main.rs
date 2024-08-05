@@ -14,13 +14,13 @@ macro_rules! notes {
 }
 
 fn main() {
-    let _ = parse_assistant!(BExpParser, "!true && true");
-    let _ = parse_assistant!(AExpParser, "12 + 20");
-    let _ = parse_assistant!(AExpParser, "let helloWorld = 12 + 20");
-    let _ = parse_assistant!(PitchParser, "c4_shp");
-    let _ = parse_assistant!(PitchParser, "d5");
-    let _ = parse_assistant!(NoteLenParser, "qt.");
-    let _ = parse_assistant!(NoteParser, "(d5, qt.)");
+    parse_assistant!(BExpParser, "!true && true");
+    parse_assistant!(AExpParser, "12 + 20");
+    parse_assistant!(AExpParser, "let helloWorld = 12 + 20");
+    parse_assistant!(PitchParser, "c4_shp");
+    parse_assistant!(PitchParser, "d5");
+    parse_assistant!(NoteLenParser, "qt.");
+    parse_assistant!(NoteParser, "(d5, qt.)");
 
     notes![innocent, 0.25];
     notes![anthem, 0.3];
