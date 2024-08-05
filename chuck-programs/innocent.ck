@@ -1,4 +1,6 @@
-SinOsc s => dac;
+WvOut wav;
+wav.wavFilename("chuck-programs/innocent.wav");
+SinOsc s => wav => dac;
 0.5 => s.gain; 261.62555 => s.freq; 0.25 :: second => now;
 0.5 => s.gain; 293.66476 => s.freq; 0.25 :: second => now;
 0.5 => s.gain; 311.12698 => s.freq; 0.75 :: second => now;
@@ -154,3 +156,4 @@ SinOsc s => dac;
 0.5 => s.gain; 293.66476 => s.freq; 0.5 :: second => now;
 0.5 => s.gain; 246.94165 => s.freq; 0.5 :: second => now;
 0.5 => s.gain; 261.62555 => s.freq; 1.5 :: second => now;
+wav.closeFile();

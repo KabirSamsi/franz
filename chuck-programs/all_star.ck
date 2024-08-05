@@ -1,4 +1,6 @@
-SinOsc s => dac;
+WvOut wav;
+wav.wavFilename("chuck-programs/all_star.wav");
+SinOsc s => wav => dac;
 0.5 => s.gain; 195.99773 => s.freq; 0.5 :: second => now;
 0.5 => s.gain; 293.66476 => s.freq; 0.25 :: second => now;
 0.5 => s.gain; 246.94165 => s.freq; 0.25 :: second => now;
@@ -46,3 +48,4 @@ SinOsc s => dac;
 0.5 => s.gain; 195.99773 => s.freq; 0.25 :: second => now;
 0.5 => s.gain; 220 => s.freq; 0.5 :: second => now;
 0.5 => s.gain; 164.81378 => s.freq; 0.875 :: second => now;
+wav.closeFile();

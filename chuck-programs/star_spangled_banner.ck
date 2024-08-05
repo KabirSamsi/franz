@@ -1,4 +1,6 @@
-SinOsc s => dac;
+WvOut wav;
+wav.wavFilename("chuck-programs/star_spangled_banner.wav");
+SinOsc s => wav => dac;
 0.5 => s.gain; 349.22824 => s.freq; 0.45 :: second => now;
 0.5 => s.gain; 293.66476 => s.freq; 0.15 :: second => now;
 0.5 => s.gain; 233.08186 => s.freq; 0.6 :: second => now;
@@ -100,3 +102,4 @@ SinOsc s => dac;
 0.5 => s.gain; 622.25397 => s.freq; 0.3 :: second => now;
 0.5 => s.gain; 523.2511 => s.freq; 0.6 :: second => now;
 0.5 => s.gain; 466.1638 => s.freq; 2.4 :: second => now;
+wav.closeFile();

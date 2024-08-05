@@ -2,22 +2,20 @@
 mod ast;
 mod codegen;
 mod error;
+mod parse;
+// mod preprocess;
 mod songs;
 
-fn main() {
-    let _ = &codegen::compile_seq("innocent", songs::innocent(), 0.25, false);
-    let _ = &codegen::compile_seq(
-        "star_spangled_banner",
-        songs::anthem(),
-        0.3,
-        false
-    );
-    let _ = &codegen::compile_seq(
-        "apprasionata",
-        songs::apprasionata(),
-        0.15,
-        false
-    );
+macro_rules! notes {
+    ($name:ident, $speed:expr) => {
+        let _ =
+            &codegen::compile_seq(stringify!($name), songs::$name(), $speed);
+    };
+}
 
-    let _ = &codegen::compile_seq("all_star", songs::allstar(), 0.25, false);
+fn main() {
+    notes![innocent, 0.25];
+    notes![anthem, 0.25];
+    notes![apprasionata, 0.25];
+    notes![allstar, 0.25];
 }

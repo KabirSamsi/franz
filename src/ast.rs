@@ -68,7 +68,8 @@ pub enum RhythmComp {
     Ternary(BExp, Box<RhythmComp>, Box<RhythmComp>),
     Plus(Box<RhythmComp>, Box<RhythmComp>),
     Times(AExp, Box<RhythmComp>),
-    BeatSequence(Vec<RhythmComp>)
+    RhythmSequence(Vec<RhythmComp>),
+    BeatSequence(Vec<NoteLen>)
 }
 
 pub enum PitchComp {
@@ -77,7 +78,8 @@ pub enum PitchComp {
     Ternary(BExp, Box<PitchComp>, Box<PitchComp>),
     Plus(Box<PitchComp>, Box<PitchComp>),
     Times(AExp, Box<PitchComp>),
-    PitchSeq(Vec<PitchComp>)
+    PitchCompSeq(Vec<PitchComp>),
+    PitchSeq(Vec<Pitch>)
 }
 
 pub enum NoteComp {
@@ -86,12 +88,13 @@ pub enum NoteComp {
     Ternary(BExp, Box<NoteComp>, Box<NoteComp>),
     Plus(Box<NoteComp>, Box<NoteComp>),
     Times(AExp, Box<NoteComp>),
-    Phrase(Vec<NoteComp>)
+    NoteCompSeq(Vec<NoteComp>),
+    Phrase(Vec<Note>)
 }
 
 pub enum Expr {
     Var(Handle),
-    MotifApply(RhythmComp, NoteComp)
+    MotifApply(RhythmComp, PitchComp)
 }
 
 pub type Control = (Vec<Param>, Vec<Expr>, Expr);

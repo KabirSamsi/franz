@@ -11,7 +11,9 @@ use crate::{
 macro_rules! notes {
     ($(($p1:expr, $p2:expr)),* $(,)?) => {
         $crate::ast::NoteComp::Phrase(vec![
-            $($crate::ast::NoteComp::Note(($p1, $p2))),*
+            $(
+                ($p1, $p2)
+            ),*
         ])
     };
 }

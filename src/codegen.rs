@@ -78,31 +78,36 @@ fn process(note_wrapper: NoteComp, speed: f32) -> FranzResult<(f32, f32)> {
 
 // Compile an AST to a series of notes, and write to file
 pub fn compile_seq(
-    name: &str, phrase: NoteComp, speed: f32, print: bool
+    name: &str, phrase: NoteComp, speed: f32
 ) -> FranzResult<()> {
     //Write results to file
     let mut file = File::create(format!("chuck-programs/{name}.ck"))
         .map_err(FranzError::IO)?;
     let (mut freq, mut time);
 
-    let empty: Vec<NoteComp> = Vec::new();
+    let empty: Vec<((BasePitch, Accidental, i32), (BaseNoteLen, i32))> =
+        Vec::new();
 
-    let notes = match phrase {
-        //Extract out note sequence, if present
-        NoteComp::Phrase(v) => v,
-        _ => empty
-    };
+    let notes: Vec<((BasePitch, Accidental, i32), (BaseNoteLen, i32))> =
+        match phrase {
+            //Extract out note sequence, if present
+            NoteComp::Phrase(v) => v,
+            _ => empty
+        };
 
-    let _ = file.write_all(b"SinOsc s => dac;\n");
+    let _ = file.write_all(
+        format!(
+            "WvOut wav;\nwav.wavFilename(\"chuck-programs/{name}.wav\");\n"
+        )
+        .as_bytes()
+    );
 
-    if print {
-        println!("SinOsc s => dac;");
-    }
+    let _ = file.write_all(b"SinOsc s => wav => dac;\n");
 
     for note in notes {
         //Process each line and write it
 
-        (freq, time) = process(note, speed)?;
+        (freq, time) = process(NoteComp::Note(note), speed)?;
         file.write_all(
             (format!(
                 "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n"
@@ -110,11 +115,8 @@ pub fn compile_seq(
             .as_bytes()
         )
         .map_err(FranzError::IO)?;
-        if print {
-            println!(
-                "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;"
-            );
-        }
     }
+    let _ = file.write_all(b"wav.closeFile();");
+
     Ok(())
 }
