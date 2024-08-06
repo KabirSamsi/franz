@@ -60,7 +60,11 @@ pub KeySigPitch: KeySigPitch = {
 };
 
 pub NoteLen: NoteLen = {
-    <b:Beat> <dots:r"[.]*"> => (b, String::from(dots).chars().count().try_into().unwrap())
+    #[precedence(level="1")]
+    <b:Beat> <dots:r"[.]*"> => (b, ((String::from(dots).chars().count() - 1)).try_into().unwrap()),
+
+    #[precedence(level="0")]
+    <b: Beat> => (b, 0)
 };
 
 pub BExp: BExp = {
