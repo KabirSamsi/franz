@@ -1,24 +1,30 @@
-(* Note that here, we always pass in a notes sequencet. It's an implicit argument *)
-
 motif intro(split1, split2) = {
     (split1 ? et; et : qt;); qt.; et; qt; qt;  (split2 ? qt; qt; q : hf.)
 };
 
-motif midPart() {
+motif midPart() = {
     qt; hf; hf; qt.; et; hf; qt.; et; qt; qt; hf.
-}
+};
 
-motif endPhrase(p1) {
+motif endPhrase(p1) = {
     (p1 ? (et; et) : qt); qt; qt; qt; hf.
-}
+};
 
-motif transition2() {
-    2 * (et; et; qt;); et.; qt; hf;
-}
+motif transition2() = {
+    (2 * (et; et; qt;)); et.; qt; hf;
+};
 
-motif introEighth(notes) = {intro(notes, true, false)};
-motif introQtr(notes) = {intro(notes, false, false)};
-motif introQtrSplit(notes, split2) = {intro(notes, false, true)};
+motif introEighth(notes) = {
+    intro(notes, true, false)
+};
+
+motif introQtr(notes) = {
+    intro(notes, false, false)
+};
+
+motif introQtrSplit(notes, split2) = {
+    intro(notes, false, true)
+};
 
 control = {
     use {
@@ -27,12 +33,12 @@ control = {
         tempo = Andante;
     };
 
-    phrase1Opening = {
+    phrase phrase1Opening = {
         introEighth({c4, d4, e4, d4, e4, g4, d4}) +
         introQtr({g3, c4, b3, c4, e4, b3})
     };
     
-    phrase1 = {
+    phrase phrase1 = {
         phrase1Opening +
         introQtr({g3, a3, g3, a3, e4, g3}) +
         introQtr({e4, d4, a3, a3, d4, d4}) +
@@ -41,17 +47,17 @@ control = {
         endPhrase(true, {e4, d4, c4, d4, b3_ntl, c4})
     };
 
-    transitionPhrase = {
+    phrase transitionPhrase = {
         introEighth({e4, f4, g4, f4, g4, b4, f4}) +
         introEighth({b3, e4, d4, e4, g4, d4}) +
         transition2({c4, d4, e4, d4, e4, f4, e4, b3, b3})
         endPhrase(false, {a4, g4, f4, e4, g4}) + (qt.)(g4)
     };
 
-    middlePhrase = {
+    phrase middlePhrase = {
         midPart({g4, c5, b4, g4, f4, e4, f4, e4, f4, b4, g4}) +
         midPart({g4, c5, b4, g4, f4, e4, f4, e4, f4, d4, c4})
     };
 
     return {pharse1 + transitionPhrase + middlePhrase + phrase1};
-}
+};

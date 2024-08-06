@@ -74,7 +74,6 @@ pub enum RhythmComp {
 pub enum PitchComp {
     Var(Handle),
     Pitch(Pitch),
-    Ternary(BExp, Box<PitchComp>, Box<PitchComp>),
     Plus(Box<PitchComp>, Box<PitchComp>),
     Times(AExp, Box<PitchComp>),
     PitchCompSeq(Vec<PitchComp>),
@@ -83,7 +82,6 @@ pub enum PitchComp {
 
 pub enum NoteComp {
     Var(Handle),
-    Ternary(BExp, Box<NoteComp>, Box<NoteComp>),
     Plus(Box<NoteComp>, Box<NoteComp>),
     Times(AExp, Box<NoteComp>),
     NoteCompSeq(Vec<NoteComp>),

@@ -1,20 +1,20 @@
-motif primary(start) {
+motif primary(start) = {
     et.; sx; qt; qt; qt; (start ? (hf) : (qt; qt));
-}
+};
 
-motif secondary(start) {
+motif secondary(start) = {
     (start ? (et; et) : (qt)) qt.; et; qt; hf;
-}
+};
 
 (* No need to separate these two, but it looks nicer *)
-motif preEnding1() {
+motif preEnding1() = {
     qt; qt; qt; et; et; qt; qt; qt;
     qt; et; et; et; et; qt; qt;
-}
+};
 
-motif preEnding2() {
+motif preEnding2() = {
     et; et; qt.; et; et; et; hf;
-}
+};
 
 control = {
     use {
@@ -23,21 +23,21 @@ control = {
         tempo = Adagio;
     };
 
-    intro = {
+    phrase intro = {
         primary(true, {f4; d4; b3; d4; f4; b4}) + primary(true, {d5; c5; b4; d4; e4_ntl; f4})
         + secondary(true, {f4; f4; d5; c5; b4; a4}) + primary(false, {g4; a4; b4; b4; f4; d4; b3})
-    }
+    };
 
-    middle = {
+    phrase middle = {
         primary(true, {d5; d5; d5; e5; f5; f5}) + primary(true, {e5; d5; c5; d5; e5; e5})
         + secondary(false, {e5; d5; c5; b4; a4}) + primary(true, {g4; a4; b4; d4; e4_ntl; f4})
-    }
+    };
 
-    end = {
+    phrase end = {
         preEnding1({f4; b4; b4; b4; a4; g4; g4; g4; c5; e5; d5; c5; b4; b4; a4}) +
         preEnding2({f4; f4; b4; c5; d5; e5; f5}) +
         secondary(true, {b4, c5, d5, e5, c5, b5})
-    }
+    };
 
-    return 2 * intro + middle + end
-}
+    return {2 * intro + middle + end};
+};
