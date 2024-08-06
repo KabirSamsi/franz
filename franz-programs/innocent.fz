@@ -1,23 +1,19 @@
-(* Note that here, we always pass in a notes sequence. It's an implicit argument *)
+(* Note that here, we always pass in a notes sequencet. It's an implicit argument *)
+
 motif intro(split1, split2) = {
-    (split1 ? et; et : q;);
-    qt.; et; q; q; 
-    (split2 ? q; q; q : h.)
+    (split1 ? et; et : qt;); qt.; et; qt; qt;  (split2 ? qt; qt; q : hf.)
 };
 
 motif mid_part() {
-    q; h; h; q.; et; h; 
-    q.; et; q; q; h.
+    qt; hf; hf; qt.; et; hf; qt.; et; qt; qt; hf.
 }
 
-motif transition1() {
-    et; et; q; q; q; h.
+motif endPhrase(p1) {
+    (p1 ? (et; et) : qt); qt; qt; qt; hf.
 }
 
 motif transition2() {
-    2 * (et; et; q;);
-    e.; q; h;
-    q; q; q; q; tie(w; h.)
+    2 * (et; et; qt;); et.; qt; hf;
 }
 
 motif intro_eighth(notes) = {intro(notes, true, false)};
@@ -29,27 +25,33 @@ control = {
         key = {b_flt, e_flt, a_flt};
         meter = 4/4;
         tempo = Andante;
-    }
-    
-    phrase_1 = {
-        intro_eighth({c4, d4, e4, d4, e4, g4, d4});
-        intro_qtr({g3, c4, b3, c4, e4, b3});
-        intro_qtr({g3, a3, g3, a3, e4, g3});
-        intro_qtr({e4, d4, a3, a3, d4, d4});
-
-        intro_eighth({c4, d4, e4, d4, e4, g4, d4});
-        intro_qtr({g3, c4, b3, c4, e4, b3});
-        intro_qtr_split({g3, a3, e4, d4, e4, f4, g4, e4});
-        transition1({e4, d4, c4, d4, b3_ntl, c4})
     };
 
-    return phrase_1 + seq {
-        intro_eighth({e4, f4, g4, f4, g4, b4, f4});
-        intro_eighth({b3, e4, d4, e4, g4, d4});
-        transition2({c4, d4, e4, d, e, 4, e, b, b, a, g, f, e, g});
+    phrase1Opening = {
+        intro_eighth({c4, d4, e4, d4, e4, g4, d4}) +
+        intro_qtr({g3, c4, b3, c4, e4, b3})
+    };
+    
+    phrase1 = {
+        phrase1Opening +
+        intro_qtr({g3, a3, g3, a3, e4, g3}) +
+        intro_qtr({e4, d4, a3, a3, d4, d4}) +
+        phrase1Opening +
+        intro_qtr_split({g3, a3, e4, d4, e4, f4, g4, e4}) +
+        endPhrase(true, {e4, d4, c4, d4, b3_ntl, c4})
+    };
 
-        (* Middle section *)
-        mid_part({g4, c5, b4, g4, f4, e4, f4, e4, f4, b4, g4})
+    transitionPhrase = {
+        intro_eighth({e4, f4, g4, f4, g4, b4, f4}) +
+        intro_eighth({b3, e4, d4, e4, g4, d4}) +
+        transition2({c4, d4, e4, d4, e4, f4, e4, b3, b3})
+        endPhrase(false, {a4, g4, f4, e4, g4}) + (qt.)(g4)
+    };
+
+    middlePhrase = {
+        mid_part({g4, c5, b4, g4, f4, e4, f4, e4, f4, b4, g4}) +
         mid_part({g4, c5, b4, g4, f4, e4, f4, e4, f4, d4, c4})
-    } + phrase_1
+    };
+
+    return {pharse1 + transitionPhrase + middlePhrase + phrase1};
 }
