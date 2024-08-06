@@ -57,15 +57,13 @@ pub type Pitch = (BasePitch, Accidental, AExp);
 pub type Note = (Pitch, NoteLen);
 
 pub enum Param {
-    Var(Handle),
     KeySig(Vec<KeySigPitch>),
     Tempo(Tempo),
     TimeSig((AExp, AExp))
 }
 
 pub enum RhythmComp {
-    Var(Handle),
-    Beat(NoteLen),
+    Assign(Handle, Box<RhythmComp>),
     Ternary(BExp, Box<RhythmComp>, Box<RhythmComp>),
     Plus(Box<RhythmComp>, Box<RhythmComp>),
     Times(AExp, Box<RhythmComp>),
@@ -85,7 +83,6 @@ pub enum PitchComp {
 
 pub enum NoteComp {
     Var(Handle),
-    Note(Note),
     Ternary(BExp, Box<NoteComp>, Box<NoteComp>),
     Plus(Box<NoteComp>, Box<NoteComp>),
     Times(AExp, Box<NoteComp>),

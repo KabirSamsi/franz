@@ -1,7 +1,7 @@
 (* Note that here, we always pass in a notes sequence. It's an implicit argument *)
 motif intro(split1, split2) = {
     (split1 ? et; et : q;);
-    q.; et; q; q; 
+    qt.; et; q; q; 
     (split2 ? q; q; q : h.)
 };
 
@@ -26,7 +26,9 @@ motif intro_qtr_split(notes, split2) = {intro(notes, false, true)};
 
 control = {
     use {
-        keysig = {b_flt, e_flt, a_flt};
+        key = {b_flt, e_flt, a_flt};
+        meter = 4/4;
+        tempo = Andante;
     }
     
     phrase_1 = {

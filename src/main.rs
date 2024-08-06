@@ -19,8 +19,13 @@ fn main() {
     parse_assistant!(AExpParser, "let helloWorld = 12 + 20");
     parse_assistant!(PitchParser, "c4_shp");
     parse_assistant!(PitchParser, "d5");
+    parse_assistant!(KeySigPitchParser, "d_shp");
     parse_assistant!(NoteLenParser, "qt.");
     parse_assistant!(NoteParser, "(d5, qt.)");
+
+    parse_assistant!(ParamParser, "key= { b_flt, e_flt, a_flt };");
+    parse_assistant!(ParamParser, "meter = 4/4;");
+    parse_assistant!(ParamParser, "tempo = Andante;");
 
     notes![innocent, 0.25];
     notes![anthem, 0.3];

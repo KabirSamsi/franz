@@ -1,5 +1,5 @@
 use crate::{
-    ast::{AExp, Accidental, BaseNoteLen, BasePitch, NoteComp},
+    ast::{AExp, Accidental, BaseNoteLen, BasePitch, Note, NoteComp},
     error::{FranzError, FranzResult}
 };
 use std::{fs::File, io::Write};
@@ -42,16 +42,9 @@ fn length_idx(beatval: &BaseNoteLen) -> i32 {
 }
 
 // Compute frequency and length of a note
-fn process(note_wrapper: NoteComp, speed: f32) -> FranzResult<(f32, f32)> {
+fn process(note: Note, speed: f32) -> FranzResult<(f32, f32)> {
     let two: f32 = 2.0;
     let half: f32 = 0.5;
-
-    // Match out note components. Compute frequency based on this.
-    let note: ((BasePitch, Accidental, _), (BaseNoteLen, _)) =
-        match note_wrapper {
-            NoteComp::Note(n) => Ok(n),
-            _ => Err(FranzError::FlattenError)
-        }?;
 
     let (pitch, length) = note;
     let (base, acc, octave_exp) = pitch;
@@ -113,7 +106,7 @@ pub fn compile_seq(
     for note in notes {
         //Process each line and write it
 
-        (freq, time) = process(NoteComp::Note(note), speed)?;
+        (freq, time) = process(note, speed)?;
         file.write_all(
             (format!(
                 "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n"
