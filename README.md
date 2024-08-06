@@ -98,7 +98,7 @@ Pitch sequences are expressed as `{note1; note2; ...}` or for example, `{d4; e4;
 **Applying a motif to a pitch sequence** allows us to use earlier motifs pitch sequences to generate full note sequences. Here's the syntax for that:
 
 ```
-beethoven5Opening = fifthSymphonyOpening({rst; g4; g4; g4; e4}) + fifthSymphony Opening({rst; f4; f4; f4; d4});
+beethoven5Opening = fifthSymphonyOpening({rst; g4; g4; g4; e4}) + fifthSymphonyOpening({rst; f4; f4; f4; d4});
 ```
 
 Note that `e4` is not marked as flat. The key signature we described above handles that.
@@ -117,4 +117,4 @@ Or in this case:
 
 # Footnotes
 
-Part of my inspiration for this comes from [Calyx](https://docs.calyxir.org/intro.html), a research project and HDL IR I contributed to!
+Part of my inspiration for this comes from [Calyx](https://docs.calyxir.org/intro.html), a research project and hardware-description IR I worked on!
