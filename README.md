@@ -15,7 +15,7 @@ motif myMotif(<args>) = {
 };
 ```
 
-`args` should contain names which can be either integer arguments. These can be used to specify details of the _rhythm sequence_.
+`args` should contain names which can be either boolean or integer arguments. These can be used to specify details of the _rhythm sequence_.
 
 A rhythm sequence can consist of beat values (`ts, sx, et, qt, hf, wh`) suffixed optionally with dots, which function the same way as dots in standard sheet music do. `hf` functions as a half note (two beats in common time) while `hf.` functions as a dotted-half note (three beats in common time). As so, a simple example to outline the rhythm of the opening to Beethoven's 5th symphony might be:
 
