@@ -1,6 +1,6 @@
 # Franz
 
-Franz is a domain-specific music description language. It aims to provide straightforward, text-based musical notation, and explores the relationship between rhythm motifs and note sequences.
+Franz is a domain-specific programming & music description language. It aims to provide straightforward, text-based musical notation, and explores the relationship between rhythm motifs and note sequences.
 
 Franz compiles to [ChucK](https://chuck.stanford.edu/). ChucK is a lower-level, strongly-timed programming language specifically targeted for music notation. It expresses notes at a frequency level. There are examples of `.ck` files in this project, the result of compilation. _Note that this compiler does not utilize the full functionality of ChucK, as it targets rather different aspects of musicality._
 
@@ -114,3 +114,7 @@ return {phrase` + phrase2 + ...};
 Or in this case:
 
 ```return {beethoven5Opening};```
+
+# Footnotes
+
+Part of my inspiration for this comes from [Calyx](https://docs.calyxir.org/intro.html), a research project and HDL IR I contributed to!
