@@ -108,7 +108,7 @@ Note that `e4` is not marked as flat. The key signature we described above handl
 `Return` is actually just a phrase. Just chain together the desired phrases, with any necessary manipulations:
 
 ```
-return {phrase` + phrase2 + ...};
+return {phrase1 + phrase2 + ...};
 ```
 
 Or in this case:

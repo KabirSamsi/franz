@@ -1,5 +1,5 @@
 motif intro(split1, split2) = {
-    (split1 ? et; et : qt;); qt.; et; qt; qt;  (split2 ? qt; qt; q : hf.)
+    (split1 ? (et; et;) : (qt;)); qt.; et; qt; qt;  (split2 ? (qt; qt; qt;) : (hf.;))
 };
 
 motif midPart() = {
@@ -7,12 +7,14 @@ motif midPart() = {
 };
 
 motif endPhrase(p1) = {
-    (p1 ? (et; et) : qt); qt; qt; qt; hf.
+    (p1 ? (et; et;) : (qt);); qt; qt; qt; hf.
 };
 
 motif transition2() = {
     (2 * (et; et; qt;)); et.; qt; hf;
 };
+
+g4_ntl
 
 motif introEighth(notes) = {
     intro(notes, true, false)
