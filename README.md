@@ -7,7 +7,7 @@ Franz compiles to [ChucK](https://chuck.stanford.edu/). ChucK is a lower-level, 
 # Syntax
 
 ## Rhythm and Motifs 
-Begin by describing your rhythm motifs as follows:
+Begin by describing any rhythm motifs as follows:
 
 ```
 motif myMotif(<args>) = {
@@ -47,7 +47,7 @@ motif fifthSymphonyOpening() = {
 
 Note that the beats should be included **after** the arithmetic expression.
 
-Motifs are technically partial functions. They are intended to be applied to note sequences, insdie the **control**, as we'll discuss momentarily.
+Motifs are technically partial functions. They are intended to be applied to note sequences, inside the **control**, as we'll discuss momentarily.
 
 ## Defining a Control
 

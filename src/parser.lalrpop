@@ -3,37 +3,10 @@ use crate::ast::{Pitch, KeySigPitch, NoteLen, Note, BasePitch, Accidental, BaseN
 
 grammar;
 
-// pub RhythComp : RhythComp = {
-//     #[precedence(level="0")]
-//     <beats: Semicolon<NoteLen>> => RhythComp::BeatSequence(beats),
-
-//     #[precedence(level="1")] #[assoc(side="left")]
-//     <n:AExp> "*" "(" <comp:RhythComp> ")" => RhythComp::Times(n, comp),
-
-//     #[precedence(level="2")] #[assoc(side="left")]
-//     <comp1:RhythComp> "+" <comp2:RhythComp> => RhythComp::Plus(comp1, comp2),
-
-//     #[precedence(level="3")] #[assoc(side="left")]
-//     <b:BExp> "?" <comp1:RhythComp> ":" <comp2:RhythComp> => RhythComp::Ternary(b, comp1, comp2),
-
-//     #[precedence(level="4")] #[assoc(side="right")]
-//     "motif" <handle:r"[a-z]+[a-zA-Z]*"> "{" <comp:RhythComp> "};" => RhythComp::Assign(handle, comp),
-// };
-
 pub Param : Param = {
     "key" "=" "{" <pitches: Comma<KeySigPitch>> "};" => Param::KeySig(pitches),
     "meter" "=" <n1:AExp> "/" <n2:AExp> ";" => Param::TimeSig((n1, n2)),
     "tempo" "=" <tempo:Tempo> ";" => Param::Tempo(tempo)
-};
-
-Semicolon<T>: Vec<T> = {
-    <mut v:(<T> "; ")*> <e:T?> => match e {
-        None => v,
-        Some(e) => {
-            v.push(e);
-            v
-        }
-    }
 };
 
 Comma<T>: Vec<T> = {
@@ -61,7 +34,7 @@ pub KeySigPitch: KeySigPitch = {
 
 pub NoteLen: NoteLen = {
     #[precedence(level="1")]
-    <b:Beat> <dots:r"[.]*"> => (b, ((String::from(dots).chars().count() - 1)).try_into().unwrap()),
+    <b:Beat> <dots:r"[.]*"> => (b, ((String::from(dots).chars().count())).try_into().unwrap()),
 
     #[precedence(level="0")]
     <b: Beat> => (b, 0)
