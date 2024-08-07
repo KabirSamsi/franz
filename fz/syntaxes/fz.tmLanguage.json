@@ -1,0 +1,81 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Franz",
+	"patterns": [
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#operators"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#numbers"
+		},
+		{
+			"include": "#reserved-words"
+		},
+		{
+			"include": "#ctrl-statements"
+		}
+	],
+	"repository": {
+		"ctrl-statements": {
+			"patterns": [
+				{
+					"match": "\\b(use|if|control|return)\\b",
+					"name": "keyword.control.fz"
+				}
+			]
+		},
+		"reserved-words": {
+			"patterns": [
+				{
+					"match": "\\b(motif|phrase|key|meter|tempo)\\b",
+					"name": "entity.name.function.member.fz"
+				}
+			]
+		},
+		"constants": {
+			"match": "\\b(?:true|false|null|Lento|Adagio|Andante|Allegro|Presto)\\b",
+			"name": "constant.language.json"
+		},
+		"numbers": {
+			"match": "(?x)        # turn on extended mode\n  -?        # an optional minus\n  (?:\n    0       # a zero\n    |       # ...or...\n    [1-9]   # a 1-9 character\n    \\d*     # followed by zero or more digits\n  )\n  (?:\n    (?:\n      \\.    # a period\n      \\d+   # followed by one or more digits\n    )?\n    (?:\n      [eE]  # an e character\n      [+-]? # followed by an option +/-\n      \\d+   # followed by one or more digits\n    )?      # make exponent optional\n  )?        # make decimal portion optional",
+			"name": "constant.numeric.json"
+		},
+		"strings": {
+			"name": "string.quoted.double.fz",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"match": "\\\\.",
+					"name": "constant.character.escape.fz"
+				}
+			]
+		},
+		"value": {
+			"patterns": [
+				{
+					"include": "#constants"
+				},
+				{
+					"include": "#numbers"
+				},
+				{
+					"include": "#strings"
+				},
+				{
+					"include": "#reserved-words"
+				},
+				{
+					"include": "#ctrl-statements"
+				}
+			]
+		}
+	},
+	"scopeName": "source.fz"
+}
