@@ -6,6 +6,7 @@ motif secondary(start) = {
     (start ? (2 * et) : (qt)) qt.; et; qt; hf;
 };
 
+
 (* No need to separate these two, but it looks nicer *)
 motif preEnding1() = {
     (3 * qt); (2 * et); (4 * qt); (4 * et); (2 * qt);
@@ -28,12 +29,12 @@ control = {
     };
 
     phrase middle = {
-        primary(true, {d5; d5; d5; e5; f5; f5}) + primary(true, {e5; d5; c5; d5; e5; e5})
+        primary(true, {(3 * d5); e5; f5; f5}) + primary(true, {e5; d5; c5; d5; e5; e5})
         + secondary(false, {e5; d5; c5; b4; a4}) + primary(true, {g4; a4; b4; d4; e4_ntl; f4})
     };
 
     phrase end = {
-        preEnding1({f4; b4; b4; b4; a4; g4; g4; g4; c5; e5; d5; c5; b4; b4; a4}) +
+        preEnding1({f4; (3 * b4); a4; (3 * g4); c5; e5; d5; c5; b4; b4; a4}) +
         preEnding2({f4; f4; b4; c5; d5; e5; f5}) +
         secondary(true, {b4, c5, d5, e5, c5, b5})
     };
