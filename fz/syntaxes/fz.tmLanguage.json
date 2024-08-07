@@ -3,6 +3,9 @@
 	"name": "Franz",
 	"patterns": [
 		{
+			"include": "#comments"
+		},
+		{
 			"include": "#strings"
 		},
 		{
@@ -69,6 +72,20 @@
 				}
 			]
 		},
+		"comments": {
+			"patterns": [
+				{
+					"begin": "\\(\\*",
+					"captures": {
+						"0": {
+							"name": "punctuation.definition.comment.json"
+						}
+					},
+					"end": "\\*\\)",
+					"name": "comment.block.json"
+				}
+			]
+		},
 		"value": {
 			"patterns": [
 				{
@@ -79,6 +96,9 @@
 				},
 				{
 					"include": "#strings"
+				},
+				{
+					"include": "comments"
 				},
 				{
 					"include": "#reserved-words"

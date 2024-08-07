@@ -1,19 +1,18 @@
 motif primary(start) = {
-    et.; sx; qt; qt; qt; (start ? (hf) : (qt; qt));
+    et.; sx; (3 * qt); (start ? (hf) : (2 * qt));
 };
 
 motif secondary(start) = {
-    (start ? (et; et) : (qt)) qt.; et; qt; hf;
+    (start ? (2 * et) : (qt)) qt.; et; qt; hf;
 };
 
 (* No need to separate these two, but it looks nicer *)
 motif preEnding1() = {
-    qt; qt; qt; et; et; qt; qt; qt;
-    qt; et; et; et; et; qt; qt;
+    (3 * qt); (2 * et); (4 * qt); (4 * et); (2 * qt);
 };
 
 motif preEnding2() = {
-    et; et; qt.; et; et; et; hf;
+    et; et; qt.; (3 * et); hf;
 };
 
 control = {
