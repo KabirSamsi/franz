@@ -6,7 +6,6 @@ motif secondary(start) = {
     (start ? (2 * et) : (qt)) qt.; et; qt; hf;
 };
 
-
 (* No need to separate these two, but it looks nicer *)
 motif preEnding1() = {
     (3 * qt); (2 * et); (4 * qt); (4 * et); (2 * qt);

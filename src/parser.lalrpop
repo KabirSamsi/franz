@@ -1,7 +1,57 @@
 use std::str::*;
-use crate::ast::{Pitch, KeySigPitch, NoteLen, Note, BasePitch, Accidental, BaseNoteLen, AExp, BExp, Tempo, Param};
+use crate::ast::{KeySigPitch, NoteLen, BasePitch, RhythmComp, PitchComp, Accidental, BaseNoteLen, AExp, BExp, Tempo, Param};
 
 grammar;
+
+pub PitchComp : PitchComp = {
+    #[precedence(level="3")]
+    "{" <pitches : Semicolon<PitchComp>> "}" => PitchComp::PitchCompSeq(pitches),
+    "(" <seq: PitchComp> ")" => seq,
+
+    #[precedence(level="2")]  #[assoc(side="left")]
+    <c1: PitchComp> r"\}[\s]*\+\[\s]*\{" <c2 : PitchComp> => PitchComp::Plus(Box::new(c1), Box::new(c2)),
+
+    #[precedence(level="1")]  #[assoc(side="left")]
+    <n: AExp> r"\*[\s]*" <comp: PitchComp> => PitchComp::Times(n, Box::new(comp)),
+
+    #[precedence(level="0")]
+    <note:NoteName> <n:AExp> => PitchComp::Pitch((note, Accidental::Blank, n)),
+    <note:NoteName> <n:AExp> "_" <acc:Accidental> => PitchComp::Pitch((note, acc, n))
+};
+
+pub RhythmComp : RhythmComp = {
+    #[precedence(level="6")]
+    "{" <rhythms : Semicolon<RhythmComp>> "}" => RhythmComp::RhythmSequence(rhythms),
+    "(" <seq: RhythmComp> ")" => seq,
+
+    #[precedence(level="5")]  #[assoc(side="left")]
+    <c1: RhythmComp> r"\}[\s]*\+\[\s]*\{" <c2 : RhythmComp> => RhythmComp::Plus(Box::new(c1), Box::new(c2)),
+
+    #[precedence(level="4")]  #[assoc(side="left")]
+    <n: AExp> r"\*[\s]*" <comp: RhythmComp> => RhythmComp::Times(n, Box::new(comp)),
+    
+    #[precedence(level="3")]
+    <b: BExp> "?" <c: RhythmComp> => RhythmComp::Ternary(b, Box::new(c), Box::new(RhythmComp::RhythmSequence(vec![]))),
+    
+    #[precedence(level="2")]
+    <b: BExp> "?" <c1: RhythmComp> ":" <c2: RhythmComp> => RhythmComp::Ternary(b, Box::new(c1), Box::new(c2)),
+
+    #[precedence(level="1")]
+    <b:BaseNoteLen> <dots:r"[.]*"> => RhythmComp::Beat((b, ((String::from(dots).chars().count())).try_into().unwrap())),
+
+    #[precedence(level="0")]
+    <b: BaseNoteLen> => RhythmComp::Beat((b, 0))
+};
+
+Semicolon<T>: Vec<T> = {
+    <mut v:(<T> ";")*> <e:T?> => match e {
+        None => v,
+        Some(e) => {
+            v.push(e);
+            v
+        }
+    }
+};
 
 pub Param : Param = {
     "key" "=" "{" <pitches: Comma<KeySigPitch>> "};" => Param::KeySig(pitches),
@@ -19,25 +69,16 @@ Comma<T>: Vec<T> = {
     }
 };
 
-pub Note : Note = {
-    "(" <note: Pitch> "," <len: NoteLen> ")" => (note, len)
-};
-
-pub Pitch: Pitch = {
-    <note:NoteName> <n:AExp> => (note, Accidental::Blank, n),
-    <note:NoteName> <n:AExp> "_" <acc:Accidental> => (note, acc, n)
-};
-
 pub KeySigPitch: KeySigPitch = {
-    <note:NoteName> "_" <acc:Accidental> => (note, acc)
+    <note: NoteName> "_" <acc: Accidental> => (note, acc)
 };
 
 pub NoteLen: NoteLen = {
     #[precedence(level="1")]
-    <b:Beat> <dots:r"[.]*"> => (b, ((String::from(dots).chars().count())).try_into().unwrap()),
+    <b:BaseNoteLen> <dots:r"[.]*"> => (b, ((String::from(dots).chars().count())).try_into().unwrap()),
 
     #[precedence(level="0")]
-    <b: Beat> => (b, 0)
+    <b:BaseNoteLen> => (b, 0)
 };
 
 pub BExp: BExp = {
@@ -83,7 +124,7 @@ pub NoteName: BasePitch = {
     "rst" => BasePitch::Rest,
 };
 
-pub Beat: BaseNoteLen = {
+pub BaseNoteLen: BaseNoteLen = {
     "ts" => BaseNoteLen::Ts,
     "sx" => BaseNoteLen::Sixteenth,
     "et" => BaseNoteLen::Eighth,

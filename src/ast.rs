@@ -63,25 +63,21 @@ pub enum Param {
 }
 
 pub enum RhythmComp {
-    Assign(Handle, Box<RhythmComp>),
+    Beat(NoteLen),
     Ternary(BExp, Box<RhythmComp>, Box<RhythmComp>),
     Plus(Box<RhythmComp>, Box<RhythmComp>),
     Times(AExp, Box<RhythmComp>),
-    RhythmSequence(Vec<RhythmComp>),
-    BeatSequence(Vec<NoteLen>)
+    RhythmSequence(Vec<RhythmComp>)
 }
 
 pub enum PitchComp {
-    Var(Handle),
     Pitch(Pitch),
     Plus(Box<PitchComp>, Box<PitchComp>),
     Times(AExp, Box<PitchComp>),
-    PitchCompSeq(Vec<PitchComp>),
-    PitchSeq(Vec<Pitch>)
+    PitchCompSeq(Vec<PitchComp>)
 }
 
 pub enum NoteComp {
-    Var(Handle),
     Plus(Box<NoteComp>, Box<NoteComp>),
     Times(AExp, Box<NoteComp>),
     NoteCompSeq(Vec<NoteComp>),

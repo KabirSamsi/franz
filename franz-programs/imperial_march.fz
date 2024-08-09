@@ -22,7 +22,7 @@ control = {
     };
 
     phrase intro = {
-        opening({(3 * g4); (2 * {e4; b4; g4})}) + opening({(3 * d5); e5; b4; f4_shp; e4; b4; g4});
+        opening({(3 * {g4}); (2 * {e4; b4; g4})}) + opening({(3 * d5); e5; b4; f4_shp; e4; b4; g4});
     };
 
     phrase middlePrefix = {
