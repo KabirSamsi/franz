@@ -14,11 +14,18 @@ macro_rules! notes {
 }
 
 fn main() {
-    parse_assistant!(RhythmCompParser, "{qt.; 2 * hf; true ? wh : hf}");
+    parse_assistant!(BExpParser, "(true && false) || !(true || true)");
 
-    notes![innocent, 0.25];
-    notes![anthem, 0.3];
-    notes![apprasionata, 0.15];
-    notes![imperial_march, 0.3];
-    notes![anthem2, 0.3];
+    parse_assistant!(
+        RhythmCompParser,
+        "{2 * qt; qt.; {!true ? hf : {qt; qt}}}"
+    );
+
+    parse_assistant!(PitchCompParser, "a4; b4; c4_shp; 2 * {d4; e4}");
+
+    // notes![innocent, 0.25];
+    // notes![anthem, 0.3];
+    // notes![apprasionata, 0.15];
+    // notes![imperial_march, 0.3];
+    // notes![anthem2, 0.3];
 }

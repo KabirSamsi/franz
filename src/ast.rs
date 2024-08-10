@@ -1,6 +1,6 @@
 pub type Handle = String;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Copy)]
 pub enum BasePitch {
     A,
     B,
@@ -12,13 +12,14 @@ pub enum BasePitch {
     Rest
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Copy)]
 pub enum Accidental {
     Sharp,
     Flat,
     Natural,
     Blank
 }
+
 #[derive(Clone)]
 pub enum BaseNoteLen {
     Ts,
@@ -83,6 +84,7 @@ pub enum PitchComp {
 }
 
 pub enum NoteComp {
+    Var(Handle),
     Note(Note),
     Plus(Box<NoteComp>, Box<NoteComp>),
     Times(AExp, Box<NoteComp>),
@@ -90,8 +92,11 @@ pub enum NoteComp {
 }
 
 pub enum Expr {
+    Motif(Vec<Handle>, RhythmComp),
+    Phrase(Vec<Handle>, PitchComp),
     MotifAssgn(Handle, RhythmComp),
     PitchAssgn(Handle, PitchComp),
+    NoteAssgn(Handle, PitchComp),
     MotifApply(RhythmComp, PitchComp)
 }
 

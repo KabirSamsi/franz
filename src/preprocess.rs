@@ -1,4 +1,15 @@
-use crate::ast::{AExp, BExp, NoteLen, Pitch, PitchComp, RhythmComp};
+use crate::ast::{
+    AExp, Accidental, BExp, BaseNoteLen, BasePitch, Handle, KeySigPitch, Note,
+    NoteLen, Pitch, PitchComp, RhythmComp
+};
+
+fn lookup_motif(_var: Handle) -> RhythmComp {
+    RhythmComp::Beat((BaseNoteLen::Qtr, 2))
+}
+
+fn lookup_phrase(_var: Handle) -> PitchComp {
+    PitchComp::Pitch((BasePitch::C, Accidental::Natural, AExp::Int(4)))
+}
 
 // Evaluate an arithmetic expression (simplify before compilation)
 fn eval_aexp(e: AExp) -> i32 {
@@ -26,6 +37,7 @@ fn eval_bexp(e: BExp) -> bool {
 fn flatten_beat(rhythm: RhythmComp) -> Vec<NoteLen> {
     match rhythm {
         RhythmComp::Beat(n) => vec![n],
+
         RhythmComp::Ternary(b, r1, r2) => {
             if eval_bexp(b) {
                 flatten_beat(*r1)
@@ -61,6 +73,7 @@ fn flatten_beat(rhythm: RhythmComp) -> Vec<NoteLen> {
 fn flatten_pitch(pitches: PitchComp) -> Vec<Pitch> {
     match pitches {
         PitchComp::Pitch(n) => vec![n],
+
         PitchComp::Plus(r1, r2) => {
             let (mut v1, v2) = (flatten_pitch(*r1), flatten_pitch(*r2));
             v1.extend(v2);
@@ -82,5 +95,28 @@ fn flatten_pitch(pitches: PitchComp) -> Vec<Pitch> {
             }
             result_vec
         }
+    }
+}
+
+// Apply a motif to a pitch sequence, thereby generating a series of notes
+fn apply_motif(motif: Vec<NoteLen>, pitches: Vec<Pitch>) -> Vec<Note> {
+    assert!(motif.len() == pitches.len());
+    (1..motif.len())
+        .map(|x| (pitches[x].clone(), motif[x].clone()))
+        .collect::<Vec<_>>()
+}
+fn apply_keysig(mut pitch: Pitch, keysig: &Vec<KeySigPitch>) {
+    let (base, accidental, octave) = pitch;
+    for key in keysig {
+        let (keybase, keyacc) = key;
+        if (base == *keybase) && (accidental == Accidental::Blank) {
+            pitch = (*keybase, *keyacc, octave.clone());
+        }
+    }
+}
+
+fn keysig_phrase(pitches: Vec<Pitch>, keysig: Vec<KeySigPitch>) {
+    for pitch in pitches {
+        apply_keysig(pitch, &keysig);
     }
 }

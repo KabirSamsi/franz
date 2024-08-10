@@ -105,18 +105,15 @@ pub fn compile_seq(
 
     for n in notes {
         //Process each line and write it
-        match n {
-            NoteComp::Note(note) => {
-                (freq, time) = process(note, speed)?;
-                file.write_all(
-                    (format!(
-                        "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n"
-                    ))
-                    .as_bytes()
-                )
-                .map_err(FranzError::IO)?;
-            }
-            _ => ()
+        if let NoteComp::Note(note) = n {
+            (freq, time) = process(note, speed)?;
+            file.write_all(
+                (format!(
+                    "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n"
+                ))
+                .as_bytes()
+            )
+            .map_err(FranzError::IO)?;
         }
     }
     let _ = file.write_all(b"wav.closeFile();");

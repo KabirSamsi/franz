@@ -4,38 +4,47 @@ use crate::ast::{KeySigPitch, NoteLen, BasePitch, RhythmComp, PitchComp, Acciden
 grammar;
 
 pub PitchComp : PitchComp = {
-    #[precedence(level="0")]
-    <note:NoteName> <n:AExp> => PitchComp::Pitch((note, Accidental::Blank, n)),
-    <note:NoteName> <n:AExp> "_" <acc:Accidental> => PitchComp::Pitch((note, acc, n)),
-
-    #[precedence(level="1")]  #[assoc(side="left")]
-    <n: AExp> r"\*[\s]*" <comp: PitchComp> => PitchComp::Times(n, Box::new(comp)),
-
-    #[precedence(level="2")]  #[assoc(side="left")]
-    <c1: PitchComp> r"\}[\s]*\+\[\s]*\{" <c2 : PitchComp> => PitchComp::Plus(Box::new(c1), Box::new(c2)),
-
-    #[precedence(level="3")]
-    "{" <pitches : Semicolon<PitchComp>> "}" => PitchComp::PitchSeq(pitches)
+    <p1:PitchComp> ";" <p2:PitchCompLevel2> => PitchComp::Plus(Box::new(p1), Box::new(p2)),
+    PitchCompLevel2
 };
 
-pub RhythmComp : RhythmComp = {
-    #[precedence(level="0")]
-    <b: BaseNoteLen> => RhythmComp::Beat((b, 0)),
+PitchCompLevel2 : PitchComp = {
+    <n: ATerminal> "*" <p:PitchCompLevel3> => PitchComp::Times(n, Box::new(p)),
+    PitchCompLevel3
+};
 
-    #[precedence(level="1")]
-    <b:BaseNoteLen> <dots:r"[.]*"> => RhythmComp::Beat((b, ((String::from(dots).chars().count())).try_into().unwrap())),
+PitchCompLevel3 : PitchComp = {
+    <p: PitchTerminal> => p,
+    "{" <p: PitchComp> "}" => p
+};
 
-    #[precedence(level="2")]  #[assoc(side="left")]
-    <b: BExp> "?" <c1: RhythmComp> ":" <c2: RhythmComp> => RhythmComp::Ternary(b, Box::new(c1), Box::new(c2)),
+PitchTerminal : PitchComp = {
+    <note:NoteName> <n:AExp> => PitchComp::Pitch((note, Accidental::Blank, n)),
+    <note:NoteName> <n:AExp> "_" <acc:Accidental> => PitchComp::Pitch((note, acc, n))
+};
 
-    #[precedence(level="3")]  #[assoc(side="left")]
-    <n: AExp> r"\*[\s]*" <comp: RhythmComp> => RhythmComp::Times(n, Box::new(comp)),
+pub RhythmComp: RhythmComp = {
+    <r1:RhythmComp> ";" <r2:RhythmCompLevel2> => RhythmComp::Plus(Box::new(r1), Box::new(r2)),
+    RhythmCompLevel2,
+};
 
-    #[precedence(level="4")]  #[assoc(side="left")]
-    <c1: RhythmComp> "+" <c2 : RhythmComp> => RhythmComp::Plus(Box::new(c1), Box::new(c2)),
+RhythmCompLevel2: RhythmComp = {
+    <b:BExp> "?" <r1:RhythmCompLevel3> ":" <r2:RhythmCompLevel3> => RhythmComp::Ternary(b, Box::new(r1), Box::new(r2)),
+    RhythmCompLevel3,
+};
 
-    #[precedence(level="5")]
-    "{" <beats: Semicolon<RhythmComp>> "}" => RhythmComp::RhythmSequence(beats)
+RhythmCompLevel3: RhythmComp = {
+    <n:ATerminal> "*" <r:RhythmCompLevel4> => RhythmComp::Times(n, Box::new(r)),
+    RhythmCompLevel4,
+};
+
+RhythmCompLevel4: RhythmComp = {
+    <r:RhythmTerminal> => r,
+    "{" <r:RhythmComp> "}" => r
+};
+
+RhythmTerminal: RhythmComp = {
+    <b: NoteLen> => RhythmComp::Beat(b)
 };
 
 Semicolon<T>: Vec<T> = {
@@ -64,11 +73,11 @@ Comma<T>: Vec<T> = {
     }
 };
 
-pub KeySigPitch: KeySigPitch = {
+KeySigPitch: KeySigPitch = {
     <note: NoteName> "_" <acc: Accidental> => (note, acc)
 };
 
-pub NoteLen: NoteLen = {
+NoteLen: NoteLen = {
     #[precedence(level="1")]
     <b:BaseNoteLen> <dots:r"[.]*"> => (b, ((String::from(dots).chars().count())).try_into().unwrap()),
 
@@ -77,32 +86,50 @@ pub NoteLen: NoteLen = {
 };
 
 pub BExp: BExp = {
-    #[precedence(level="0")]
+    <e1:BExp> "||" <e2:BExpLevel1> => BExp::Or(Box::new(e1), Box::new(e2)),
+    BExpLevel1
+};
+
+BExpLevel1: BExp = {
+    <e1:BExpLevel1> "&&" <e2:BExpLevel2> => BExp::And(Box::new(e1), Box::new(e2)),
+    BExpLevel2
+};
+
+BExpLevel2 : BExp = {
+    "!" <e:BExpLevel2> => BExp::Not(Box::new(e)),
+    BExpLevel3
+};
+
+BExpLevel3 : BExp = {
+    <b: BTerminal> => b,
+    "(" <e : BExp> ")" => e
+};
+
+BTerminal : BExp = {
     "true" => BExp::True,
     "false" => BExp::False,
-
-    #[precedence(level="1")]
-    "!" <e:BExp> => BExp::Not(Box::new(e)),
-
-    #[precedence(level="2")] #[assoc(side="left")]
-    <e1:BExp> "||" <e2:BExp> => BExp::Or(Box::new(e1), Box::new(e2)),
-
-    #[precedence(level="3")] #[assoc(side="left")]
-    <e1:BExp> "&&" <e2:BExp> => BExp::And(Box::new(e1), Box::new(e2)),
 };
 
 pub AExp: AExp = {
-    #[precedence(level="0")]
-    r"[0-9]+" => AExp::Int(i32::from_str(<>).unwrap()),
-
-    #[precedence(level="1")] #[assoc(side="left")] 
-    <e1:AExp> "+" <e2:AExp> => AExp::Plus(Box::new(e1), Box::new(e2)),
-
-    #[precedence(level="2")] #[assoc(side="left")]
-    <e1:AExp> "*" <e2:AExp> => AExp::Times(Box::new(e1), Box::new(e2)),
+    <e1:AExp> "+" <e2:AExpLevel1> => AExp::Plus(Box::new(e1), Box::new(e2)),
+    AExpLevel1,
 };
 
-pub NoteName: BasePitch = {
+AExpLevel1: AExp = {
+    <e1:AExpLevel1> "*" <e2:AExpLevel2> => AExp::Times(Box::new(e1), Box::new(e2)),
+    AExpLevel2,
+};
+
+AExpLevel2: AExp = {
+    <n:ATerminal> => n,
+    "(" <e:AExp> ")" => e,
+};
+
+ATerminal: AExp = {
+    r"[0-9]+" => AExp::Int(i32::from_str(<>).unwrap()),
+};
+
+NoteName: BasePitch = {
     "c" => BasePitch::C,
     "d" => BasePitch::D,
     "e" => BasePitch::E,
@@ -113,7 +140,7 @@ pub NoteName: BasePitch = {
     "rst" => BasePitch::Rest,
 };
 
-pub BaseNoteLen: BaseNoteLen = {
+BaseNoteLen: BaseNoteLen = {
     "ts" => BaseNoteLen::Ts,
     "sx" => BaseNoteLen::Sixteenth,
     "et" => BaseNoteLen::Eighth,
@@ -122,7 +149,7 @@ pub BaseNoteLen: BaseNoteLen = {
     "wh" => BaseNoteLen::Whole
 };
 
-pub Accidental: Accidental = {
+Accidental: Accidental = {
     "flt" => Accidental::Flat,
     "shp" => Accidental::Sharp,
     "ntl" => Accidental::Natural,

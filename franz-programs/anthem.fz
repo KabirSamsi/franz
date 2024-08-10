@@ -1,25 +1,25 @@
-motif primary(start) = {
-    et.; sx; 3 * qt; {start ? hf : 2 * qt}
-};
-
-motif secondary(start) = {
-    {start ? 2 * et : qt}; qt.; et; qt; hf
-};
-
-(* No need to separate these two, but it looks nicer *)
-motif preEnding1() = {
-    3 * qt; 2 * et; 4 * qt; 4 * et; 2 * qt;
-};
-
-motif preEnding2() = {
-    2 * et; qt.; 3 * et; hf;
-};
-
 control = {
     use {
         key={b_flt, e_flt};
         meter = 3/4;
         tempo = Adagio;
+    };
+
+    motif primary(start) = {
+        et.; sx; 3 * qt; {start ? hf : 2 * qt}
+    };
+
+    motif secondary(start) = {
+        {start ? 2 * et : qt}; qt.; et; qt; hf
+    };
+
+    (* No need to separate these two, but it looks nicer *)
+    motif preEnding1() = {
+        3 * qt; 2 * et; 4 * qt; 4 * et; 2 * qt;
+    };
+
+    motif preEnding2() = {
+        2 * et; qt.; 3 * et; hf;
     };
 
     phrase intro = {

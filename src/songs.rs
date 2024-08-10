@@ -6,8 +6,6 @@ use crate::{
     ast::{AExp::*, Accidental::*, BaseNoteLen::*, BasePitch::*}
 };
 
-/// Generates a [`crate::ast::NoteComp`] through a comma-separated list of
-/// `[crate::ast::Note]`s.
 macro_rules! notes {
     ($(($p1:expr, $p2:expr)),* $(,)?) => {
         $crate::ast::NoteComp::Phrase(vec![
@@ -324,7 +322,17 @@ pub fn apprasionata() -> ast::NoteComp {
         ((F, Natural, Int(4)), (Sixteenth, 0)),
         ((G, Natural, Int(4)), (Sixteenth, 0)),
         ((F, Natural, Int(4)), (Qtr, 1)),
-        ((E, Natural, Int(4)), (Half, 0)),
+        ((E, Natural, Int(4)), (Qtr, 0)),
+        ((G, Natural, Int(2)), (Qtr, 0)),
+        ((C, Natural, Int(3)), (Qtr, 0)),
+        ((E, Flat, Int(3)), (Qtr, 0)),
+        ((G, Natural, Int(3)), (Qtr, 0)),
+        ((C, Natural, Int(4)), (Qtr, 0)),
+        ((E, Flat, Int(4)), (Qtr, 1)),
+        ((D, Natural, Int(4)), (Sixteenth, 0)),
+        ((C, Natural, Int(4)), (Sixteenth, 0)),
+        ((B, Natural, Int(3)), (Sixteenth, 0)),
+        ((C, Natural, Int(4)), (Half, 0))
     ]
 }
 
@@ -428,71 +436,6 @@ pub fn anthem2() -> ast::NoteComp {
         ((A, Natural, Int(4)), (Qtr, 0)),
         ((B, Natural, Int(4)), (Qtr, 0)),
         ((C, Natural, Int(5)), (Whole, 0)),
-    ]
-}
-
-pub fn cantina() -> ast::NoteComp {
-    notes![
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Qtr, 0)),
-        ((A, Natural, Int(4)), (Sixteenth, 0)),
-        ((G, Sharp, Int(4)), (Sixteenth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((G, Natural, Int(4)), (Sixteenth, 0)),
-        ((F, Sharp, Int(4)), (Sixteenth, 0)),
-        ((G, Natural, Int(4)), (Eighth, 0)),
-        ((F, Natural, Int(4)), (Qtr, 0)),
-        ((D, Natural, Int(4)), (Qtr, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Qtr, 0)),
-        ((C, Natural, Int(5)), (Sixteenth, 0)),
-        ((B, Natural, Int(4)), (Sixteenth, 0)),
-        ((C, Natural, Int(5)), (Eighth, 0)),
-        ((B, Flat, Int(4)), (Sixteenth, 0)),
-        ((A, Natural, Int(4)), (Sixteenth, 0)),
-        ((B, Flat, Int(4)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Qtr, 0)),
-        ((E, Natural, Int(4)), (Qtr, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Qtr, 0)),
-        ((A, Natural, Int(4)), (Sixteenth, 0)),
-        ((G, Sharp, Int(4)), (Sixteenth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((G, Natural, Int(4)), (Sixteenth, 0)),
-        ((F, Sharp, Int(4)), (Sixteenth, 0)),
-        ((G, Natural, Int(4)), (Eighth, 0)),
-        ((F, Natural, Int(4)), (Qtr, 0)),
-        ((D, Natural, Int(4)), (Qtr, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Eighth, 0)),
-        ((D, Natural, Int(5)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Qtr, 0)),
-        ((C, Natural, Int(5)), (Sixteenth, 0)),
-        ((B, Natural, Int(4)), (Sixteenth, 0)),
-        ((C, Natural, Int(5)), (Eighth, 0)),
-        ((B, Flat, Int(4)), (Sixteenth, 0)),
-        ((A, Natural, Int(4)), (Sixteenth, 0)),
-        ((B, Flat, Int(4)), (Eighth, 0)),
-        ((A, Natural, Int(4)), (Qtr, 0)),
-        ((E, Natural, Int(4)), (Qtr, 0))
     ]
 }
 

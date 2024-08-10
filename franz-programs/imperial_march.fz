@@ -1,24 +1,24 @@
-motif opening() = {
-    {3 * qt}; et.; sx; qt; et.; sx; hf;
-};
-
-motif middleIntro() = {
-    qt; et.; sx; qt; et.; sx;
-};
-
-motif chromaticTransition() = {
-    {2 * sx}; qt; et; qt; et.; sx;
-};
-
-motif middleOutro() = {
-    qt; et.; sx; hf;
-};
-
 control = {
     use {
         key = {b_flt, e_flt};
         meter = 4/4;
         tempo = Andante;
+    };
+
+    motif opening() = {
+        {3 * qt}; et.; sx; qt; et.; sx; hf;
+    };
+
+    motif middleIntro() = {
+        qt; et.; sx; qt; et.; sx;
+    };
+
+    motif chromaticTransition() = {
+        {2 * sx}; qt; et; qt; et.; sx;
+    };
+
+    motif middleOutro() = {
+        qt; et.; sx; hf;
     };
 
     phrase intro = {

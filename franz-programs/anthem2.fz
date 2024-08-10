@@ -1,21 +1,21 @@
-motif primary(phrase1End, phrase2End) = {
-    {phrase2End ? et}; qt; et.; sx; {phrase1End ? qt. : {qt; et}}; 
-}
-
-motif middlePrimary() = {
-    hf; 4 * et; qt.; et; hf;
-}
-
-motif ending() = {
-    hf; qt; qt; wh;
-}
-
-control {
+control = {
     use {
         key={};
         meter=4/4;
         tempo=Andante
     };
+
+    motif primary(phrase1End, phrase2End) = {
+        {phrase2End ? et}; qt; et.; sx; {phrase1End ? qt. : {qt; et}}; 
+    }
+
+    motif middlePrimary() = {
+        hf; 4 * et; qt.; et; hf;
+    }
+
+    motif ending() = {
+        hf; qt; qt; wh;
+    }
 
     phrase phrase1 = {
         primary(false, true, {g4; c5; g4; a4; b4; e4})
