@@ -103,17 +103,21 @@ pub fn compile_seq(
 
     let _ = file.write_all(b"SinOsc s => wav => dac;\n");
 
-    for note in notes {
+    for n in notes {
         //Process each line and write it
-
-        (freq, time) = process(note, speed)?;
-        file.write_all(
-            (format!(
-                "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n"
-            ))
-            .as_bytes()
-        )
-        .map_err(FranzError::IO)?;
+        match n {
+            NoteComp::Note(note) => {
+                (freq, time) = process(note, speed)?;
+                file.write_all(
+                    (format!(
+                        "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n"
+                    ))
+                    .as_bytes()
+                )
+                .map_err(FranzError::IO)?;
+            }
+            _ => ()
+        }
     }
     let _ = file.write_all(b"wav.closeFile();");
 

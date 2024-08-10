@@ -12,7 +12,7 @@ macro_rules! notes {
     ($(($p1:expr, $p2:expr)),* $(,)?) => {
         $crate::ast::NoteComp::Phrase(vec![
             $(
-                ($p1, $p2)
+                $crate::ast::NoteComp::Note(($p1, $p2))
             ),*
         ])
     };

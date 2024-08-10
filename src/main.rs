@@ -3,6 +3,7 @@ mod ast;
 mod codegen;
 mod error;
 mod parse;
+mod preprocess;
 mod songs;
 
 macro_rules! notes {

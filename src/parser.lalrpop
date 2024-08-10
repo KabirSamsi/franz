@@ -89,9 +89,6 @@ pub BExp: BExp = {
 
     #[precedence(level="3")] #[assoc(side="left")]
     <e1:BExp> "&&" <e2:BExp> => BExp::And(Box::new(e1), Box::new(e2)),
-
-    #[precedence(level="4")] #[assoc(side="right")]
-    "let" <handle:r"[a-z]+[a-zA-Z]*"> "=" <e:BExp> => BExp::Assign((*handle).to_string(), Box::new(e))
 };
 
 pub AExp: AExp = {
@@ -103,9 +100,6 @@ pub AExp: AExp = {
 
     #[precedence(level="2")] #[assoc(side="left")]
     <e1:AExp> "*" <e2:AExp> => AExp::Times(Box::new(e1), Box::new(e2)),
-
-    #[precedence(level="3")] #[assoc(side="right")]
-    "let" <handle:r"[a-z]+[a-zA-Z]*"> "=" <e:AExp> => AExp::Assign((*handle).to_string(), Box::new(e))
 };
 
 pub NoteName: BasePitch = {
