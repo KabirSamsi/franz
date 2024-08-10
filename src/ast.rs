@@ -74,7 +74,7 @@ pub enum PitchComp {
     Pitch(Pitch),
     Plus(Box<PitchComp>, Box<PitchComp>),
     Times(AExp, Box<PitchComp>),
-    PitchCompSeq(Vec<PitchComp>)
+    PitchSeq(Vec<PitchComp>)
 }
 
 pub enum NoteComp {
@@ -85,7 +85,8 @@ pub enum NoteComp {
 }
 
 pub enum Expr {
-    Var(Handle),
+    MotifAssgn(Handle, RhythmComp),
+    PitchAssgn(Handle, PitchComp),
     MotifApply(RhythmComp, PitchComp)
 }
 

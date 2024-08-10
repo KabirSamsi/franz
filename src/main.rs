@@ -13,20 +13,7 @@ macro_rules! notes {
 }
 
 fn main() {
-    parse_assistant!(BExpParser, "!true && true");
-    parse_assistant!(AExpParser, "12 + 20");
-    parse_assistant!(AExpParser, "let helloWorld = 12 + 20");
-    parse_assistant!(KeySigPitchParser, "d_shp");
-    parse_assistant!(NoteLenParser, "qt.");
-
-    parse_assistant!(ParamParser, "key= { b_flt, e_flt, a_flt };");
-    parse_assistant!(ParamParser, "meter = 4/4;");
-    parse_assistant!(ParamParser, "tempo = Andante;");
-
-    parse_assistant!(RhythmCompParser, "{qt; qt; qt.}");
-    parse_assistant!(PitchCompParser, "{c4; c4; g4;}");
-
-    parse_assistant!(PitchCompParser, "{c4; c4; g4;}");
+    parse_assistant!(RhythmCompParser, "{qt.; 2 * hf; true ? wh : hf}");
 
     notes![innocent, 0.25];
     notes![anthem, 0.3];
