@@ -2,7 +2,7 @@
 
 Franz is a domain-specific programming & music description language. It aims to provide straightforward, text-based musical notation, and explores the relationship between rhythm motifs and note sequences.
 
-Franz compiles to [ChucK](https://chuck.stanford.edu/), a low-level, strongly-timed programming language specifically targeted for music notation. It expresses notes at a frequency level. There are examples of `.ck` files in this project, the result of compilation. _Note that this compiler does not utilize the full functionality of ChucK, as it targets rather different aspects of musicality._
+Franz compiles to [ChucK](https://chuck.stanford.edu/), a low-level, strongly-timed programming language specifically targeted for music notation. It expresses notes at a frequency level. _Note that this compiler does not utilize the full functionality of ChucK, as it targets rather different aspects of musicality._
 
 # Syntax
 

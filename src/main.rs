@@ -18,12 +18,19 @@ macro_rules! notes {
 fn main() {
     let rhythms = parse_assistant!(
         RhythmCompParser,
-        "{2 * {qt; 2 * et; qt; wh.; 2 * qt; hf; hf.}}"
+        "{4 * {qt; 2 * et; qt; wh.; 2 * qt; hf; hf.}}"
+    );
+
+    let motif_decl = parse_assistant!(
+        MotifParser,
+        "motif firstMotif(fstParam, sndParam) = {{4 * {true ? qt : {et; et} ; 2 * et; qt;
+    wh.; 2 * qt; hf; hf.}}};"
     );
 
     let pitches = parse_assistant!(
         PitchCompParser,
-        "{2 * {g3; a3; b3; d4; e4; g4; e4; 2 * d4}}"
+        "{2 * {g4; a3; b3; d4; e4; g4; e4; 2 * d4} ; {g3; a3; b3; d4; e4; d4;
+    b3; 2 * a3} ; {g3; a3; b3; d4; e4; g4; e4; 2 * g4}}"
     );
 
     let notes = preprocess::apply_motif(

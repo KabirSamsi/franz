@@ -1,14 +1,21 @@
 use crate::ast::{
     AExp, Accidental, BExp, BaseNoteLen, BasePitch, Handle, KeySigPitch, Note,
-    NoteLen, Pitch, PitchComp, RhythmComp
+    NoteComp, NoteLen, Pitch, PitchComp, RhythmComp
 };
 
 fn lookup_motif(_var: Handle) -> RhythmComp {
-    RhythmComp::Beat((BaseNoteLen::Qtr, 2))
+    RhythmComp::Beat((BaseNoteLen::Qtr, 0))
 }
 
-fn lookup_phrase(_var: Handle) -> PitchComp {
+fn lookup_pitches(_var: Handle) -> PitchComp {
     PitchComp::Pitch((BasePitch::C, Accidental::Natural, AExp::Int(4)))
+}
+
+fn lookup_phrase(_var: Handle) -> NoteComp {
+    NoteComp::Note((
+        (BasePitch::C, Accidental::Natural, AExp::Int(4)),
+        (BaseNoteLen::Qtr, 0)
+    ))
 }
 
 // Evaluate an arithmetic expression (simplify before compilation)
@@ -59,13 +66,6 @@ pub fn flatten_beat(rhythm: RhythmComp) -> Vec<NoteLen> {
             }
             new_vec
         }
-        RhythmComp::RhythmSequence(seq) => {
-            let mut result_vec = Vec::new();
-            for sub_vec in seq {
-                result_vec.extend(flatten_beat(sub_vec))
-            }
-            result_vec
-        }
     }
 }
 
@@ -87,13 +87,6 @@ pub fn flatten_pitch(pitches: PitchComp) -> Vec<Pitch> {
                 new_vec.extend(v.clone());
             }
             new_vec
-        }
-        PitchComp::PitchSeq(seq) => {
-            let mut result_vec = Vec::new();
-            for sub_vec in seq {
-                result_vec.extend(flatten_pitch(sub_vec))
-            }
-            result_vec
         }
     }
 }
