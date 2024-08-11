@@ -18,7 +18,7 @@ control = {
     };
 
     motif transition2() = {
-        2 * {et; et; qt}; et.; qt; hf;
+        2 * {et; et; qt}; et.; qt; hf
     };
 
     motif introEighth(notes) = {intro(notes, true, false)};

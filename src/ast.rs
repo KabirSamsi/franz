@@ -1,6 +1,6 @@
 pub type Handle = String;
 
-#[derive(Clone, PartialEq, Copy)]
+#[derive(Clone, PartialEq, Copy, Debug)]
 pub enum BasePitch {
     A,
     B,
@@ -12,7 +12,7 @@ pub enum BasePitch {
     Rest
 }
 
-#[derive(Clone, PartialEq, Copy)]
+#[derive(Clone, PartialEq, Copy, Debug)]
 pub enum Accidental {
     Sharp,
     Flat,
@@ -20,7 +20,7 @@ pub enum Accidental {
     Blank
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum BaseNoteLen {
     Ts,
     Sixteenth,
@@ -38,7 +38,7 @@ pub enum Tempo {
     Presto
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum AExp {
     Var(Handle),
     Int(i32),
@@ -46,6 +46,7 @@ pub enum AExp {
     Times(Box<AExp>, Box<AExp>)
 }
 
+#[derive(Debug)]
 pub enum BExp {
     Var(Handle),
     True,
@@ -68,6 +69,7 @@ pub enum Param {
     TimeSig((AExp, AExp))
 }
 
+#[derive(Debug)]
 pub enum RhythmComp {
     Beat(NoteLen),
     Ternary(BExp, Box<RhythmComp>, Box<RhythmComp>),
@@ -76,6 +78,7 @@ pub enum RhythmComp {
     RhythmSequence(Vec<RhythmComp>)
 }
 
+#[derive(Debug)]
 pub enum PitchComp {
     Pitch(Pitch),
     Plus(Box<PitchComp>, Box<PitchComp>),

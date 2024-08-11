@@ -6,23 +6,23 @@ control = {
     };
 
     motif opening() = {
-        {3 * qt}; et.; sx; qt; et.; sx; hf;
+        {3 * qt}; et.; sx; qt; et.; sx; hf
     };
 
     motif middleIntro() = {
-        qt; et.; sx; qt; et.; sx;
+        qt; et.; sx; qt; et.; sx
     };
 
     motif chromaticTransition() = {
-        {2 * sx}; qt; et; qt; et.; sx;
+        {2 * sx}; qt; et; qt; et.; sx
     };
 
     motif middleOutro() = {
-        qt; et.; sx; hf;
+        qt; et.; sx; hf
     };
 
     phrase intro = {
-        opening({3 * g4; {2 * {e4; b4; g4}}}) + opening({3 * d5; e5; b4; f4_shp; e4; b4; g4});
+        opening({3 * g4; {2 * {e4; b4; g4}}}) + opening({3 * d5; e5; b4; f4_shp; e4; b4; g4})
     };
 
     phrase middlePrefix = {

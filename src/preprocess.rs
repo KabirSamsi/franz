@@ -34,7 +34,7 @@ fn eval_bexp(e: BExp) -> bool {
 }
 
 // Flatten a beat sequence AST to a vector of note/beat lengths
-fn flatten_beat(rhythm: RhythmComp) -> Vec<NoteLen> {
+pub fn flatten_beat(rhythm: RhythmComp) -> Vec<NoteLen> {
     match rhythm {
         RhythmComp::Beat(n) => vec![n],
 
@@ -70,7 +70,7 @@ fn flatten_beat(rhythm: RhythmComp) -> Vec<NoteLen> {
 }
 
 // Flatten a pitch sequence AST to a vector of pitches
-fn flatten_pitch(pitches: PitchComp) -> Vec<Pitch> {
+pub fn flatten_pitch(pitches: PitchComp) -> Vec<Pitch> {
     match pitches {
         PitchComp::Pitch(n) => vec![n],
 
@@ -99,12 +99,13 @@ fn flatten_pitch(pitches: PitchComp) -> Vec<Pitch> {
 }
 
 // Apply a motif to a pitch sequence, thereby generating a series of notes
-fn apply_motif(motif: Vec<NoteLen>, pitches: Vec<Pitch>) -> Vec<Note> {
+pub fn apply_motif(motif: Vec<NoteLen>, pitches: Vec<Pitch>) -> Vec<Note> {
     assert!(motif.len() == pitches.len());
-    (1..motif.len())
+    (0..motif.len())
         .map(|x| (pitches[x].clone(), motif[x].clone()))
         .collect::<Vec<_>>()
 }
+
 fn apply_keysig(mut pitch: Pitch, keysig: &Vec<KeySigPitch>) {
     let (base, accidental, octave) = pitch;
     for key in keysig {

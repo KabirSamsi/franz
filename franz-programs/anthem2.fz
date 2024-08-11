@@ -6,15 +6,15 @@ control = {
     };
 
     motif primary(phrase1End, phrase2End) = {
-        {phrase2End ? et}; qt; et.; sx; {phrase1End ? qt. : {qt; et}}; 
+        {phrase2End ? et}; qt; et.; sx; {phrase1End ? qt. : {qt; et}} 
     }
 
     motif middlePrimary() = {
-        hf; 4 * et; qt.; et; hf;
+        hf; 4 * et; qt.; et; hf
     }
 
     motif ending() = {
-        hf; qt; qt; wh;
+        hf; qt; qt; wh
     }
 
     phrase phrase1 = {

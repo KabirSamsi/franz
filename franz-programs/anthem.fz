@@ -15,11 +15,11 @@ control = {
 
     (* No need to separate these two, but it looks nicer *)
     motif preEnding1() = {
-        3 * qt; 2 * et; 4 * qt; 4 * et; 2 * qt;
+        3 * qt; 2 * et; 4 * qt; 4 * et; 2 * qt
     };
 
     motif preEnding2() = {
-        2 * et; qt.; 3 * et; hf;
+        2 * et; qt.; 3 * et; hf
     };
 
     phrase intro = {
