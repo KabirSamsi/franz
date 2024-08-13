@@ -30,6 +30,7 @@ pub enum BaseNoteLen {
     Whole
 }
 
+#[derive(Debug)]
 pub enum Tempo {
     Lento,
     Adagio,
@@ -40,7 +41,6 @@ pub enum Tempo {
 
 #[derive(Clone, Debug)]
 pub enum AExp {
-    Var(Handle),
     Int(i32),
     Plus(Box<AExp>, Box<AExp>),
     Times(Box<AExp>, Box<AExp>)
@@ -63,10 +63,34 @@ pub type KeySigPitch = (BasePitch, Accidental);
 pub type Pitch = (BasePitch, Accidental, AExp);
 pub type Note = (Pitch, NoteLen);
 
+#[derive(Debug)]
 pub enum Param {
     KeySig(Vec<KeySigPitch>),
     Tempo(Tempo),
     TimeSig((AExp, AExp))
+}
+
+#[derive(Debug)]
+pub enum UntypedExpr {
+    Var(Handle),
+    Int(i32),
+    Bool(bool),
+    Beat(NoteLen),
+    Pitch(Pitch),
+    Note(Note),
+    Motif(Handle, Vec<Handle>, Box<UntypedExpr>),
+    Pitches(Handle, Box<UntypedExpr>),
+    Phrase(Handle, Box<UntypedExpr>),
+    Ternary(Box<UntypedExpr>, Box<UntypedExpr>, Box<UntypedExpr>),
+    Plus(Box<UntypedExpr>, Box<UntypedExpr>),
+    Seq(Box<UntypedExpr>, Box<UntypedExpr>),
+    Times(Box<UntypedExpr>, Box<UntypedExpr>),
+    And(Box<UntypedExpr>, Box<UntypedExpr>),
+    Or(Box<UntypedExpr>, Box<UntypedExpr>),
+    Not(Box<UntypedExpr>),
+    Apply(Box<UntypedExpr>, Box<UntypedExpr>),
+    Return(Box<UntypedExpr>),
+    Control(Vec<Param>, Box<UntypedExpr>)
 }
 
 #[derive(Debug)]
@@ -86,7 +110,6 @@ pub enum PitchComp {
 
 #[derive(Debug)]
 pub enum NoteComp {
-    Var(Handle),
     Note(Note),
     Plus(Box<NoteComp>, Box<NoteComp>),
     Times(AExp, Box<NoteComp>),
@@ -96,6 +119,7 @@ pub enum NoteComp {
 
 #[derive(Debug)]
 pub enum Expr {
+    Var(Handle),
     Motif(Vec<Handle>, RhythmComp),
     Pitches(PitchComp),
     Phrase(NoteComp),

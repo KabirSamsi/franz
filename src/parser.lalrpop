@@ -1,58 +1,66 @@
 use std::str::*;
-use crate::ast::{Expr, KeySigPitch, NoteLen, BasePitch, RhythmComp, PitchComp, Accidental, BaseNoteLen, AExp, BExp, Tempo, Param};
+use crate::ast::{Accidental, AExp, BaseNoteLen, BasePitch, KeySigPitch, NoteLen, Param, Pitch, Tempo, UntypedExpr};
 
 grammar;
 
-pub Pitches: Expr = {
-    <p: PitchesDecl> <name: Handle> "=" "{" <comp: PitchComp> "};" => Expr::PitchAssgn(name, Box::new(Expr::Pitches(comp)))
+pub UntypedExpr : UntypedExpr = {
+    #[precedence(level="0")]
+    UntypedExprTerminal,
+
+    #[precedence(level="1")] #[assoc(side="left")]
+    "!" <e:UntypedExpr> => UntypedExpr::Not(Box::new(e)),
+
+    #[precedence(level="2")] #[assoc(side="left")]
+    <r: UntypedExpr> "[" <p: UntypedExpr> "]" => UntypedExpr::Apply(Box::new(r), Box::new(p)),
+
+    #[precedence(level="3")] #[assoc(side="left")]
+    <e1: UntypedExpr> "*" <e2: UntypedExpr> => UntypedExpr::Times(Box::new(e1), Box::new(e2)),
+    <e1:UntypedExpr> "&&" <e2:UntypedExpr> => UntypedExpr::And(Box::new(e1), Box::new(e2)),
+
+    #[precedence(level="4")] #[assoc(side="right")]
+    <b:UntypedExpr> "?" <r1:UntypedExpr> ":" <r2:UntypedExpr> => UntypedExpr::Ternary(Box::new(b), Box::new(r1), Box::new(r2)),
+
+    #[precedence(level="5")] #[assoc(side="left")]
+    <e1:UntypedExpr> "||" <e2:UntypedExpr> => UntypedExpr::Or(Box::new(e1), Box::new(e2)),
+    <e1:UntypedExpr> "+" <e2:UntypedExpr> => UntypedExpr::Plus(Box::new(e1), Box::new(e2)),
+    <r1:UntypedExpr> ";" <r2:UntypedExpr> => UntypedExpr::Seq(Box::new(r1), Box::new(r2)),
+
+    #[precedence(level="6")] #[assoc(side="right")]
+    <m: MotifDecl> <name: Handle> "[" <params: Comma<Handle>> "]" "=" <comp: UntypedExpr> => UntypedExpr::Motif(name, params, Box::new(comp)),
+    <p: PitchesDecl> <name: Handle> "=" <comp: UntypedExpr> => UntypedExpr::Pitches(name, Box::new(comp)),
+    <p: PhraseDecl> <name: Handle> "=" <comp: UntypedExpr> => UntypedExpr::Phrase(name, Box::new(comp)),
+
+    #[precedence(level="7")] #[assoc(side="right")]
+    <r: ReturnDecl> <comp: UntypedExpr> => UntypedExpr::Return(Box::new(comp)),
+
+    #[precedence(level="8")] #[assoc(side="right")]
+    <c: ControlDecl> "{" <u: UseDecl> "{" <params: Params> "}" <flow: UntypedExpr> => UntypedExpr::Control(params, Box::new(flow))
 };
 
-pub Motif : Expr = {
-    <m: MotifDecl> <name: Handle> "(" <params: Comma<Handle>> ")" "=" "{" <comp: RhythmComp> "};" => Expr::MotifAssgn(name, Box::new(Expr::Motif(params, comp)))
+UntypedExprTerminal : UntypedExpr = {
+    "(" <p:Pitch> "," <b: NoteLen> ")" => UntypedExpr::Note((p, b)),
+    <p: Pitch> => UntypedExpr::Pitch(p),
+    <v: Handle> => UntypedExpr::Var(v),
+    <b: NoteLen> => UntypedExpr::Beat(b),
+    <t: True> => UntypedExpr::Bool(true),
+    <f: False> => UntypedExpr::Bool(false),
+    <i: Int> => UntypedExpr::Int(i),
+    "(" <UntypedExpr> ")",
+    "{" <UntypedExpr> "}"
 };
 
-pub PitchComp : PitchComp = {
-    <p1:PitchComp> ";" <p2:PitchCompLevel2> => PitchComp::Plus(Box::new(p1), Box::new(p2)),
-    PitchCompLevel2
+Handle: String = {
+    r"[a-z]+[a-zA-Z]*" => (*<>).to_string()
 };
 
-PitchCompLevel2 : PitchComp = {
-    <n: ATerminal> "*" <p:PitchCompLevel3> => PitchComp::Times(n, Box::new(p)),
-    PitchCompLevel3
+pub Params: Vec<Param> = {
+    <p: Semicolon<Param>> => p
 };
 
-PitchCompLevel3 : PitchComp = {
-    <p: PitchTerminal> => p,
-    "{" <p: PitchComp> "}" => p
-};
-
-PitchTerminal : PitchComp = {
-    <note:NoteName> <n:ATerminal> => PitchComp::Pitch((note, Accidental::Blank, n)),
-    <note:NoteName> <n:ATerminal> "_" <acc:Accidental> => PitchComp::Pitch((note, acc, n))
-};
-
-pub RhythmComp: RhythmComp = {
-    <r1:RhythmComp> ";" <r2:RhythmCompLevel2> => RhythmComp::Plus(Box::new(r1), Box::new(r2)),
-    RhythmCompLevel2,
-};
-
-RhythmCompLevel2: RhythmComp = {
-    <b:BExp> "?" <r1:RhythmCompLevel3> ":" <r2:RhythmCompLevel3> => RhythmComp::Ternary(b, Box::new(r1), Box::new(r2)),
-    RhythmCompLevel3,
-};
-
-RhythmCompLevel3: RhythmComp = {
-    <n:ATerminal> "*" <r:RhythmCompLevel4> => RhythmComp::Times(n, Box::new(r)),
-    RhythmCompLevel4,
-};
-
-RhythmCompLevel4: RhythmComp = {
-    <r:RhythmTerminal> => r,
-    "{" <r:RhythmComp> "}" => r
-};
-
-RhythmTerminal: RhythmComp = {
-    <b: NoteLen> => RhythmComp::Beat(b)
+Param : Param = {
+    <k: KeyDecl> "=" "{" <pitches: Comma<KeySigPitch>> "}" => Param::KeySig(pitches),
+    <m: MeterDecl> "=" <n1:Int> "/" <n2:Int> => Param::TimeSig((AExp::Int(n1), AExp::Int(n2))),
+    <t: TempoDecl> "=" <tempo:Tempo> => Param::Tempo(tempo)
 };
 
 Semicolon<T>: Vec<T> = {
@@ -65,12 +73,6 @@ Semicolon<T>: Vec<T> = {
     }
 };
 
-pub Param : Param = {
-    <k: KeyDecl> "=" "{" <pitches: Comma<KeySigPitch>> "};" => Param::KeySig(pitches),
-    <m: MeterDecl> "=" <n1:AExp> "/" <n2:AExp> ";" => Param::TimeSig((n1, n2)),
-    <t: TempoDecl> "=" <tempo:Tempo> ";" => Param::Tempo(tempo)
-};
-
 Comma<T>: Vec<T> = {
     <mut v:(<T> ",")*> <e:T?> => match e {
         None => v,
@@ -79,6 +81,15 @@ Comma<T>: Vec<T> = {
             v
         }
     }
+};
+
+Pitch : Pitch = {
+    <note:NoteName> <n:Int> => (note, Accidental::Blank, AExp::Int(n)),
+    <note:NoteName> <n:Int> "_" <acc:Accidental> => (note, acc, AExp::Int(n))
+}
+
+Int: i32 = {
+    r"[0-9]+" => i32::from_str(<>).unwrap()
 };
 
 KeySigPitch: KeySigPitch = {
@@ -93,54 +104,6 @@ NoteLen: NoteLen = {
     <b:BaseNoteLen> => (b, 0)
 };
 
-pub BExp: BExp = {
-    <e1:BExp> "||" <e2:BExpLevel1> => BExp::Or(Box::new(e1), Box::new(e2)),
-    BExpLevel1
-};
-
-BExpLevel1: BExp = {
-    <e1:BExpLevel1> "&&" <e2:BExpLevel2> => BExp::And(Box::new(e1), Box::new(e2)),
-    BExpLevel2
-};
-
-BExpLevel2 : BExp = {
-    "!" <e:BExpLevel2> => BExp::Not(Box::new(e)),
-    BExpLevel3
-};
-
-BExpLevel3 : BExp = {
-    <b: BTerminal> => b,
-    "(" <e : BExp> ")" => e
-};
-
-BTerminal : BExp = {
-    <t: True> => BExp::True,
-    <f: False> => BExp::False,
-};
-
-pub AExp: AExp = {
-    <e1:AExp> "+" <e2:AExpLevel1> => AExp::Plus(Box::new(e1), Box::new(e2)),
-    AExpLevel1,
-};
-
-AExpLevel1: AExp = {
-    <e1:AExpLevel1> "*" <e2:AExpLevel2> => AExp::Times(Box::new(e1), Box::new(e2)),
-    AExpLevel2,
-};
-
-AExpLevel2: AExp = {
-    <n:ATerminal> => n,
-    "(" <e:AExp> ")" => e,
-};
-
-ATerminal: AExp = {
-    r"[0-9]+" => AExp::Int(i32::from_str(<>).unwrap()),
-};
-
-Handle : String = {
-    r"[a-z]+[a-zA-Z]*" => (*<>).to_string()
-};
-
 NoteName: BasePitch = {
     "c" => BasePitch::C,
     "d" => BasePitch::D,
@@ -149,7 +112,7 @@ NoteName: BasePitch = {
     "g" => BasePitch::G,
     "a" => BasePitch::A,
     "b" => BasePitch::B,
-    "rst" => BasePitch::Rest,
+    "rst" => BasePitch::Rest
 };
 
 BaseNoteLen: BaseNoteLen = {
@@ -164,7 +127,7 @@ BaseNoteLen: BaseNoteLen = {
 Accidental: Accidental = {
     "flt" => Accidental::Flat,
     "shp" => Accidental::Sharp,
-    "ntl" => Accidental::Natural,
+    "ntl" => Accidental::Natural
 };
 
 pub Tempo: Tempo = {
@@ -173,6 +136,18 @@ pub Tempo: Tempo = {
     "Andante" => Tempo::Andante,
     "Adagio" => Tempo::Adagio,
     "Lento" => Tempo::Lento
+};
+
+ControlDecl : String = {
+    "control" => (*"control").to_string()
+};
+
+UseDecl : String = {
+    "use" => (*"use").to_string()
+};
+
+ReturnDecl : String = {
+    "return" => (*"return").to_string()
 };
 
 MotifDecl : String = {

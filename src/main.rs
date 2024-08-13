@@ -6,8 +6,6 @@ mod parse;
 mod preprocess;
 mod songs;
 
-use crate::ast::NoteComp;
-
 macro_rules! notes {
     ($name:ident, $speed:expr) => {
         let _ =
@@ -16,39 +14,17 @@ macro_rules! notes {
 }
 
 fn main() {
-    let rhythms = parse_assistant!(
-        RhythmCompParser,
-        "{4 * {qt; 2 * et; qt; wh.; 2 * qt; hf; hf.}}"
+    let p = parse_assistant!(
+        UntypedExprParser,
+        "motif x[z, w] = {qt; 2 * {qt.; x ? hf : {2 * qt; hf; et.}}}"
     );
 
-    let motif_decl = parse_assistant!(
-        MotifParser,
-        "motif firstMotif(fstParam, sndParam) = {{4 * {true ? qt : {et; et} ; 2 * et; qt;
-    wh.; 2 * qt; hf; hf.}}};"
+    let g = parse_assistant!(
+        UntypedExprParser,
+        "return {qt; 2 * {qt.; {ab ? hf : 2 * qt}}}[hello]"
     );
 
-    let pitches = parse_assistant!(
-        PitchCompParser,
-        "{2 * {g4; a3; b3; d4; e4; g4; e4; 2 * d4} ; {g3; a3; b3; d4; e4; d4;
-    b3; 2 * a3} ; {g3; a3; b3; d4; e4; g4; e4; 2 * g4}}"
-    );
-
-    let notes = preprocess::apply_motif(
-        preprocess::flatten_beat(rhythms),
-        preprocess::flatten_pitch(pitches)
-    );
-
-    let mut results = Vec::new();
-
-    for note in notes {
-        results.push(NoteComp::Note(note))
-    }
-
-    let _ = codegen::compile_seq(
-        "wish_you_were_here",
-        NoteComp::Phrase(results),
-        0.25
-    );
+    dbg!(p);
 
     notes![innocent, 0.25];
     notes![anthem, 0.3];

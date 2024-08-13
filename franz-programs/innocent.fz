@@ -51,5 +51,5 @@ control = {
         midPart({g4; c5; b4; g4; f4; e4; f4; e4; f4; d4; c4})
     };
 
-    return {pharse1 + transitionPhrase + middlePhrase + phrase1};
+    return {phrase1 + transitionPhrase + middlePhrase + phrase1};
 };

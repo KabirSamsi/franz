@@ -21,7 +21,6 @@ fn lookup_phrase(_var: Handle) -> NoteComp {
 // Evaluate an arithmetic expression (simplify before compilation)
 fn eval_aexp(e: AExp) -> i32 {
     match e {
-        AExp::Var(_) => 1, //TODO
         AExp::Int(i) => i,
         AExp::Plus(e1, e2) => eval_aexp(*e1) + eval_aexp(*e2),
         AExp::Times(e1, e2) => eval_aexp(*e1) * eval_aexp(*e2)
