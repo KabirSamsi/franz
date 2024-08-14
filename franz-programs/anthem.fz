@@ -3,40 +3,39 @@ control = {
         key={b_flt, e_flt};
         meter = 3/4;
         tempo = Adagio;
-    };
+    };;
 
-    motif primary(start) = {
-        et.; sx; 3 * qt; {start ? hf : 2 * qt}
-    };
+    motif Primary[Start] = {
+        et.; sx; 3 * qt; {Start ? hf : 2 * qt}
+    };;
 
-    motif secondary(start) = {
-        {start ? 2 * et : qt}; qt.; et; qt; hf
-    };
+    motif Secondary[Start] = {
+        {Start ? 2 * et : qt}; qt.; et; qt; hf
+    };;
 
-    (* No need to separate these two, but it looks nicer *)
-    motif preEnding1() = {
+    motif PreEnding1[] = {
         3 * qt; 2 * et; 4 * qt; 4 * et; 2 * qt
-    };
+    };;
 
-    motif preEnding2() = {
+    motif PreEnding2[] = {
         2 * et; qt.; 3 * et; hf
-    };
+    };;
 
-    phrase intro = {
-        primary(true, {f4; d4; b3; d4; f4; b4}); primary(true, {d5; c5; b4; d4; e4_ntl; f4});
-        secondary(true, {f4; f4; d5; c5; b4; a4}); primary(false, {g4; a4; b4; b4; f4; d4; b3})
-    };
+    phrase Intro = {
+        Primary[[true], {f4; d4; b3; d4; f4; b4}]; Primary[[true], {d5; c5; b4; d4; e4_ntl; f4}];
+        Secondary[[true], {f4; f4; d5; c5; b4; a4}]; Primary[[false], {g4; a4; b4; b4; f4; d4; b3}]
+    };;
 
-    phrase middle = {
-        primary(true, {3 * d5; e5; f5; f5}); primary(true, {e5; d5; c5; d5; e5; e5});
-        secondary(false, {e5; d5; c5; b4; a4}); primary(true, {g4; a4; b4; d4; e4_ntl; f4})
-    };
+    phrase Middle = {
+        Primary[[true], {3 * d5; e5; f5; f5}]; Primary[[true], {e5; d5; c5; d5; e5; e5}];
+        Secondary[[false], {e5; d5; c5; b4; a4}]; Primary[[true], {g4; a4; b4; d4; e4_ntl; f4}]
+    };;
 
-    phrase end = {
-        preEnding1({f4; 3 * b4; a4; 3 * g4; c5; e5; d5; c5; b4; b4; a4});
-        preEnding2({f4; f4; b4; c5; d5; e5; f5});
-        secondary(true, {b4, c5, d5, e5, c5, b5})
-    };
+    phrase End = {
+        PreEnding1[{f4; 3 * b4; a4; 3 * g4; c5; e5; d5; c5; b4; b4; a4}];
+        PreEnding2[{f4; f4; b4; c5; d5; e5; f5}];
+        Secondary[[true], {b4; c5; d5; e5; c5; b5}]
+    };;
 
-    return {2 * intro + middle + end};
-};
+    return {2 * Intro; Middle; End};;
+}

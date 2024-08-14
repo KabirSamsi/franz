@@ -2,46 +2,45 @@ control = {
     use {
         key={};
         meter=4/4;
-        tempo=Andante
-    };
+        tempo=Andante;
+    };;
 
-    motif primary(phrase1End, phrase2End) = {
-        {phrase2End ? et}; qt; et.; sx; {phrase1End ? qt. : {qt; et}} 
-    }
+    motif Primary[Phrase1End, Phrase2End] = {
+        {Phrase2End ? et : et}; qt; et.; sx; {Phrase1End ? qt. : {qt; et}} 
+    };;
 
-    motif middlePrimary() = {
+    motif MiddlePrimary[] = {
         hf; 4 * et; qt.; et; hf
-    }
+    };;
 
-    motif ending() = {
+    motif Ending[] = {
         hf; qt; qt; wh
-    }
+    };;
 
-    phrase phrase1 = {
-        primary(false, true, {g4; c5; g4; a4; b4; e4});
-        primary(false, true, {e4; a4; g4; f4; g4; c4});
-        primary(false, true, {c4; d4; d4; e4; f4; f4});
-        primary(true, true, {g4; a4; b4; c5; d5})
-    };
+    phrase Phrase1 = {
+        Primary[[false, true], {g4; c5; g4; a4; b4; e4}];
+        Primary[[false, true], {e4; a4; g4; f4; g4; c4}];
+        Primary[[false, true], {c4; d4; d4; e4; f4; f4}];
+        Primary[[false, true], {g4; a4; b4; c5; d5}]
+    };;
 
-    phrase phrase2 = {
-        primary(false, true, {g4; e5; d5; c5; d5; b4});
-        primary(false, true, {g4; c5; b4; a4; b4; g4});
-        primary(false, true, {e4; a4; g4; f4; g4; e4});
-        primary(true, true, {c4; c5; b5; a4; g4})
-    };
+    phrase Phrase2 = {
+        Primary[[false, true], {g4; e5; d5; c5; d5; b4}];
+        Primary[[false, true], {g4; c5; b4; a4; b4; g4}];
+        Primary[[false, true], {e4; a4; g4; f4; g4; e4}];
+        Primary[[true, true], {c4; c5; b5; a4; g4}]
+    };;
 
-    phrase phrase3 = {
-        middlePrimary({e5; d5; c5; b4; c5; d5; b4; g4});
-        middlePrimary({c5; b4; a4; g4; a4; b4; g4; e4});
-        primary(false, false, {c5; a4; b4; c5; a4});
-        primary(true, true, {b4; c5; a4; c5; f5});
-        middlePrimary({f5; e5; d5; c5; d5; e5; c5; g4});
-        middlePrimary({d5; c5; b4; a4; b4; c5; a4; a4});
-        primary(false, false, {c5; b4; a4; g4; e4; c4});
-        ending({g4; a4; b4; c5})
-    };
+    phrase Phrase3 = {
+        MiddlePrimary[{e5; d5; c5; b4; c5; d5; b4; g4}];
+        MiddlePrimary[{c5; b4; a4; g4; a4; b4; g4; e4}];
+        Primary[[false, false], {c5; a4; b4; c5; a4}];
+        Primary[[true, true], {b4; c5; a4; c5; f5}];
+        MiddlePrimary[{f5; e5; d5; c5; d5; e5; c5; g4}];
+        MiddlePrimary[{d5; c5; b4; a4; b4; c5; a4; a4}];
+        Primary[[false, false], {c5; c5; b4; a4; g4; e4; c4}];
+        Ending[{g4; a4; b4; c5}]
+    };;
 
-    return {phrase1 + phrase2 + phrase3};
-
+    return {Phrase1 + Phrase2 + Phrase3};;
 }

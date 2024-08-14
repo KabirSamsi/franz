@@ -3,6 +3,10 @@ use crate::ast::{Accidental, AExp, BaseNoteLen, BasePitch, KeySigPitch, NoteLen,
 
 grammar;
 
+pub Control : UntypedExpr = {
+    <c: ControlDecl> "=" "{" <u: UseDecl> "{" <params: Params> "}" <s: Semicolons> <flow: CompSeparator<UntypedExpr>> "}" => UntypedExpr::Control(params, flow)
+};
+
 pub UntypedExpr : UntypedExpr = {
     #[precedence(level="0")]
     UntypedExprTerminal,
@@ -11,7 +15,8 @@ pub UntypedExpr : UntypedExpr = {
     "!" <e:UntypedExpr> => UntypedExpr::Not(Box::new(e)),
 
     #[precedence(level="2")] #[assoc(side="left")]
-    <r: UntypedExpr> "[" <p: UntypedExpr> "]" => UntypedExpr::Apply(Box::new(r), Box::new(p)),
+    <r: UntypedExpr> <lb1: "["> <lb2: "["> <params: Comma<UntypedExpr>> <rb1: "],"> <p: UntypedExpr> <rb2: "]"> => UntypedExpr::Apply(Box::new(r), params, Box::new(p)),
+    <r: UntypedExpr> <lb1: "["> <p: UntypedExpr> <rb2: "]"> => UntypedExpr::Apply(Box::new(r), vec![], Box::new(p)),
 
     #[precedence(level="3")] #[assoc(side="left")]
     <e1: UntypedExpr> "*" <e2: UntypedExpr> => UntypedExpr::Times(Box::new(e1), Box::new(e2)),
@@ -31,10 +36,7 @@ pub UntypedExpr : UntypedExpr = {
     <p: PhraseDecl> <name: Handle> "=" <comp: UntypedExpr> => UntypedExpr::Phrase(name, Box::new(comp)),
 
     #[precedence(level="7")] #[assoc(side="right")]
-    <r: ReturnDecl> <comp: UntypedExpr> => UntypedExpr::Return(Box::new(comp)),
-
-    #[precedence(level="8")] #[assoc(side="right")]
-    <c: ControlDecl> "{" <u: UseDecl> "{" <params: Params> "}" <flow: UntypedExpr> => UntypedExpr::Control(params, Box::new(flow))
+    <r: ReturnDecl> <comp: UntypedExpr> => UntypedExpr::Return(Box::new(comp))
 };
 
 UntypedExprTerminal : UntypedExpr = {
@@ -50,7 +52,7 @@ UntypedExprTerminal : UntypedExpr = {
 };
 
 Handle: String = {
-    r"[a-z]+[a-zA-Z]*" => (*<>).to_string()
+    r"[A-Z]+[a-zA-Z0-9]*" => (*<>).to_string()
 };
 
 pub Params: Vec<Param> = {
@@ -63,14 +65,12 @@ Param : Param = {
     <t: TempoDecl> "=" <tempo:Tempo> => Param::Tempo(tempo)
 };
 
+CompSeparator<T>: Vec<T> = {
+    <mut v:(<T> Semicolons)*> => v
+};
+
 Semicolon<T>: Vec<T> = {
-    <mut v:(<T> ";")*> <e:T?> => match e {
-        None => v,
-        Some(e) => {
-            v.push(e);
-            v
-        }
-    }
+    <mut v:(<T> ";")*> => v
 };
 
 Comma<T>: Vec<T> = {
@@ -139,39 +139,39 @@ pub Tempo: Tempo = {
 };
 
 ControlDecl : String = {
-    "control" => (*"control").to_string()
+    "control" => "control".to_string()
 };
 
 UseDecl : String = {
-    "use" => (*"use").to_string()
+    "use" => "use".to_string()
 };
 
 ReturnDecl : String = {
-    "return" => (*"return").to_string()
+    "return" => "return".to_string()
 };
 
 MotifDecl : String = {
-    "motif" => (*"motif").to_string()
+    "motif" => "motif".to_string()
 };
 
 PitchesDecl : String = {
-    "pitches" => (*"pitches").to_string()
+    "pitches" => "pitches".to_string()
 };
 
 PhraseDecl : String = {
-    "phrase" => (*"phrase").to_string()
+    "phrase" => "phrase".to_string()
 };
 
 KeyDecl : String = {
-    "key" => (*"key").to_string()
+    "key" => "key".to_string()
 };
 
 MeterDecl : String = {
-    "meter" => (*"meter").to_string()
+    "meter" => "meter".to_string()
 };
 
 TempoDecl : String = {
-    "tempo" => (*"tempo").to_string()
+    "tempo" => "tempo".to_string()
 };
 
 True : bool = {
@@ -180,4 +180,8 @@ True : bool = {
 
 False: bool = { 
     "false" => false
+};
+
+Semicolons: String = {
+    ";;" => ";;".to_string()
 };

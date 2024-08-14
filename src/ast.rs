@@ -88,9 +88,9 @@ pub enum UntypedExpr {
     And(Box<UntypedExpr>, Box<UntypedExpr>),
     Or(Box<UntypedExpr>, Box<UntypedExpr>),
     Not(Box<UntypedExpr>),
-    Apply(Box<UntypedExpr>, Box<UntypedExpr>),
+    Apply(Box<UntypedExpr>, Vec<UntypedExpr>, Box<UntypedExpr>),
     Return(Box<UntypedExpr>),
-    Control(Vec<Param>, Box<UntypedExpr>)
+    Control(Vec<Param>, Vec<UntypedExpr>)
 }
 
 #[derive(Debug)]

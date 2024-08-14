@@ -3,45 +3,45 @@ control = {
         key = {b_flt, e_flt};
         meter = 4/4;
         tempo = Andante;
-    };
+    };;
 
-    motif opening() = {
+    motif Opening[] = {
         {3 * qt}; et.; sx; qt; et.; sx; hf
-    };
+    };;
 
-    motif middleIntro() = {
+    motif MiddleIntro[] = {
         qt; et.; sx; qt; et.; sx
-    };
+    };;
 
-    motif chromaticTransition() = {
+    motif ChromaticTransition[] = {
         {2 * sx}; qt; et; qt; et.; sx
-    };
+    };;
 
-    motif middleOutro() = {
+    motif MiddleOutro[] = {
         qt; et.; sx; hf
-    };
+    };;
 
-    phrase intro = {
-        opening({3 * g4; {2 * {e4; b4; g4}}});
-        opening({3 * d5; e5; b4; f4_shp; e4; b4; g4})
-    };
+    phrase Intro = {
+        Opening[{3 * g4; {2 * {e4; b4; g4}}}];
+        Opening[{3 * d5; e5; b4; f4_shp; e4; b4; g4}]
+    };;
 
-    phrase middlePrefix = {
-        middleIntro({g5; g4; g4; g5; f5_shp; f5_ntl});
-        chromaticTransition({e5_ntl; d5_shp; e5_ntl; g4_shp; c5_shp; c5_ntl; b4_ntl})
-    };
+    phrase MiddlePrefix = {
+        MiddleIntro[{g5; g4; g4; g5; f5_shp; f5_ntl}];
+        ChromaticTransition[{e5_ntl; d5_shp; e5_ntl; g4_shp; c5_shp; c5_ntl; b4_ntl}]
+    };;
 
-    phrase middlePart1 = {
-        middlePrefix;
-        chromaticTransition({b4; a4; b4; e4; g4_flt; e4; g4_ntl});
-        middleOutro(b4; g4; b4; d4)
-    };
+    phrase MiddlePart1 = {
+        MiddlePrefix;
+        ChromaticTransition[{b4; a4; b4; e4; g4_flt; e4; g4_ntl}];
+        MiddleOutro[{b4; g4; b4; d4}]
+    };;
 
-    phrase middlePart2 = {
-        middlePrefix;
-        chromaticTransition({b4; a4; b4; e4; g4_flt; e4; b4});
-        middleOutro(g4; e4; b4; g4)
-    };
+    phrase MiddlePart2 = {
+        MiddlePrefix;
+        ChromaticTransition[{b4; a4; b4; e4; g4_flt; e4; b4}];
+        MiddleOutro[{g4; e4; b4; g4}]
+    };;
 
-    return {intro + middlePart1 + middlePart2};
-};
+    return {Intro + MiddlePart1 + MiddlePart2};;
+}
