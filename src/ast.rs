@@ -73,8 +73,8 @@ pub enum Param {
 #[derive(Debug)]
 pub enum UntypedExpr {
     Var(Handle),
-    Int(i32),
-    Bool(bool),
+    Int(i32),   //Done
+    Bool(bool), //Done
     Beat(NoteLen),
     Pitch(Pitch),
     Note(Note),
@@ -95,6 +95,7 @@ pub enum UntypedExpr {
 
 #[derive(Debug)]
 pub enum RhythmComp {
+    Var(Handle),
     Beat(NoteLen),
     Ternary(BExp, Box<RhythmComp>, Box<RhythmComp>),
     Plus(Box<RhythmComp>, Box<RhythmComp>),
@@ -103,6 +104,7 @@ pub enum RhythmComp {
 
 #[derive(Debug)]
 pub enum PitchComp {
+    Var(Handle),
     Pitch(Pitch),
     Plus(Box<PitchComp>, Box<PitchComp>),
     Times(AExp, Box<PitchComp>)
@@ -110,11 +112,11 @@ pub enum PitchComp {
 
 #[derive(Debug)]
 pub enum NoteComp {
+    Var(Handle),
     Note(Note),
     Plus(Box<NoteComp>, Box<NoteComp>),
     Times(AExp, Box<NoteComp>),
-    Apply(RhythmComp, PitchComp),
-    Phrase(Vec<NoteComp>)
+    Apply(RhythmComp, Vec<BExp>, PitchComp)
 }
 
 #[derive(Debug)]

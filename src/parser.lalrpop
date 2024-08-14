@@ -28,7 +28,7 @@ pub UntypedExpr : UntypedExpr = {
     #[precedence(level="5")] #[assoc(side="left")]
     <e1:UntypedExpr> "||" <e2:UntypedExpr> => UntypedExpr::Or(Box::new(e1), Box::new(e2)),
     <e1:UntypedExpr> "+" <e2:UntypedExpr> => UntypedExpr::Plus(Box::new(e1), Box::new(e2)),
-    <r1:UntypedExpr> ";" <r2:UntypedExpr> => UntypedExpr::Seq(Box::new(r1), Box::new(r2)),
+    <r1:UntypedExpr> ";" <r2:UntypedExpr> => UntypedExpr::Plus(Box::new(r1), Box::new(r2)),
 
     #[precedence(level="6")] #[assoc(side="right")]
     <m: MotifDecl> <name: Handle> "[" <params: Comma<Handle>> "]" "=" <comp: UntypedExpr> => UntypedExpr::Motif(name, params, Box::new(comp)),
@@ -66,11 +66,11 @@ Param : Param = {
 };
 
 CompSeparator<T>: Vec<T> = {
-    <mut v:(<T> Semicolons)*> => v
+    <v:(<T> Semicolons)*> => v
 };
 
 Semicolon<T>: Vec<T> = {
-    <mut v:(<T> ";")*> => v
+    <v:(<T> ";")*> => v
 };
 
 Comma<T>: Vec<T> = {
@@ -98,7 +98,7 @@ KeySigPitch: KeySigPitch = {
 
 NoteLen: NoteLen = {
     #[precedence(level="1")]
-    <b:BaseNoteLen> <dots:r"[.]*"> => (b, ((String::from(dots).chars().count())).try_into().unwrap()),
+    <b:BaseNoteLen> <dots:r"[.]*"> => (b, (String::from(dots).chars().count()).try_into().unwrap()),
 
     #[precedence(level="0")]
     <b:BaseNoteLen> => (b, 0)

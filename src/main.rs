@@ -3,8 +3,9 @@ mod ast;
 mod codegen;
 mod error;
 mod parse;
-mod preprocess;
+// mod preprocess;
 mod songs;
+mod t2t;
 
 use std::fs;
 
@@ -22,9 +23,9 @@ fn test_parse_song(name: &str) {
 
 fn main() {
     test_parse_song("imperial_march");
-    test_parse_song("anthem");
-    test_parse_song("anthem2");
-    test_parse_song("innocent");
+    // test_parse_song("anthem");
+    // test_parse_song("anthem2");
+    // test_parse_song("innocent");
 
     notes![innocent, 0.25];
     notes![anthem, 0.3];

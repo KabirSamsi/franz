@@ -1,22 +1,19 @@
 /*  For now, just AST representations of what `franz-programs/<song>.fz`
 should look like after parsing and full AST simplification. */
 
-use crate::{
-    ast,
-    ast::{AExp::*, Accidental::*, BaseNoteLen::*, BasePitch::*}
-};
+use crate::ast::{AExp::*, Accidental::*, BaseNoteLen::*, BasePitch::*};
 
 macro_rules! notes {
     ($(($p1:expr, $p2:expr)),* $(,)?) => {
-        $crate::ast::NoteComp::Phrase(vec![
+        vec![
             $(
                 $crate::ast::NoteComp::Note(($p1, $p2))
             ),*
-        ])
+        ]
     };
 }
 
-pub fn innocent() -> ast::NoteComp {
+pub fn innocent() -> Vec<crate::ast::NoteComp> {
     notes![
         ((C, Natural, Int(4)), (Eighth, 0)),
         ((D, Natural, Int(4)), (Eighth, 0)),
@@ -176,7 +173,7 @@ pub fn innocent() -> ast::NoteComp {
     ]
 }
 
-pub fn anthem() -> ast::NoteComp {
+pub fn anthem() -> Vec<crate::ast::NoteComp> {
     notes![
         ((F, Natural, Int(4)), (Eighth, 1)),
         ((D, Natural, Int(4)), (Sixteenth, 0)),
@@ -282,7 +279,7 @@ pub fn anthem() -> ast::NoteComp {
     ]
 }
 
-pub fn apprasionata() -> ast::NoteComp {
+pub fn apprasionata() -> Vec<crate::ast::NoteComp> {
     notes![
         ((C, Natural, Int(3)), (Qtr, 0)),
         ((F, Natural, Int(3)), (Qtr, 0)),
@@ -336,7 +333,7 @@ pub fn apprasionata() -> ast::NoteComp {
     ]
 }
 
-pub fn anthem2() -> ast::NoteComp {
+pub fn anthem2() -> Vec<crate::ast::NoteComp> {
     notes![
         ((G, Natural, Int(4)), (Eighth, 0)),
         ((C, Natural, Int(5)), (Qtr, 0)),
@@ -439,7 +436,7 @@ pub fn anthem2() -> ast::NoteComp {
     ]
 }
 
-pub fn imperial_march() -> ast::NoteComp {
+pub fn imperial_march() -> Vec<crate::ast::NoteComp> {
     notes![
         ((G, Natural, Int(4)), (Qtr, 0)),
         ((G, Natural, Int(4)), (Qtr, 0)),

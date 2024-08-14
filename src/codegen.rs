@@ -79,20 +79,12 @@ fn process(note: Note, speed: f32) -> FranzResult<(f32, f32)> {
 
 // Compile an AST to a series of notes, and write to file
 pub fn compile_seq(
-    name: &str, phrase: NoteComp, speed: f32
+    name: &str, notes: Vec<NoteComp>, speed: f32
 ) -> FranzResult<()> {
     //Write results to file
     let mut file = File::create(format!("chuck-programs/{name}.ck"))
         .map_err(FranzError::IO)?;
     let (mut freq, mut time);
-
-    let empty = Vec::new();
-
-    let notes = match phrase {
-        //Extract out note sequence, if present
-        NoteComp::Phrase(v) => v,
-        _ => empty
-    };
 
     let _ = file.write_all(
         format!(
