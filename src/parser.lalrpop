@@ -84,8 +84,8 @@ Comma<T>: Vec<T> = {
 };
 
 Pitch : Pitch = {
-    <note:NoteName> <n:Int> => (note, Accidental::Blank, AExp::Int(n)),
-    <note:NoteName> <n:Int> "_" <acc:Accidental> => (note, acc, AExp::Int(n))
+    <note:NoteName> <n:Int> => (note, Accidental::Blank, n),
+    <note:NoteName> <n:Int> "_" <acc:Accidental> => (note, acc, n)
 }
 
 Int: i32 = {

@@ -42,22 +42,15 @@ fn length_idx(beatval: &BaseNoteLen) -> i32 {
 }
 
 // Compute frequency and length of a note
-fn process(note: &Note, speed: f32) -> FranzResult<(f32, f32)> {
+fn process(note: &Note, speed: f32) -> FranzResult<(f32, f32, f32)> {
     let two: f32 = 2.0;
     let half: f32 = 0.5;
 
     let (pitch, length) = note;
-    let (base, acc, octave_exp) = pitch;
+    let (base, acc, octave) = pitch;
 
     // Compute exact length of beat based on note value and dots
     let (beat, dots) = length;
-
-    //Ensure octave and dots are in simplified form (from prior parsing)
-    let octave = match octave_exp {
-        //Extract out parsed octave
-        AExp::Int(n) => Ok(n),
-        _ => Err(FranzError::FlattenError)
-    }?;
 
     let idx = 12 * (octave + 1) + note_idx(base, acc);
     let diff: f32 = (idx - 69) as f32;
@@ -74,7 +67,12 @@ fn process(note: &Note, speed: f32) -> FranzResult<(f32, f32)> {
             .round()
             / 1000.0;
 
-    Ok((freq, time))
+    let volume = match base {
+        BasePitch::Rest => 0.0,
+        _ => 1.0
+    };
+
+    Ok((freq, time, volume))
 }
 
 // Compile an AST to a series of notes, and write to file
@@ -84,7 +82,7 @@ pub fn compile_seq(
     //Write results to file
     let mut file = File::create(format!("chuck-programs/{name}.ck"))
         .map_err(FranzError::IO)?;
-    let (mut freq, mut time);
+    let (mut freq, mut time, mut volume);
 
     let _ = file.write_all(
         format!(
@@ -98,10 +96,11 @@ pub fn compile_seq(
     for n in notes {
         //Process each line and write it
         if let NoteComp::Note(note) = n {
-            (freq, time) = process(&note, speed)?;
+            (freq, time, volume) = process(&note, speed)?;
+            volume *= 0.5;
             file.write_all(
                 (format!(
-                    "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n"
+                    "{volume} => s.gain; {freq} => s.freq; {time} :: second => now;\n"
                 ))
                 .as_bytes()
             )

@@ -57,10 +57,9 @@ pub enum BExp {
 }
 
 // Type synonyms
-pub type Dots = i32;
-pub type NoteLen = (BaseNoteLen, Dots);
+pub type NoteLen = (BaseNoteLen, i32);
 pub type KeySigPitch = (BasePitch, Accidental);
-pub type Pitch = (BasePitch, Accidental, AExp);
+pub type Pitch = (BasePitch, Accidental, i32);
 pub type Note = (Pitch, NoteLen);
 
 #[derive(Clone, Debug)]

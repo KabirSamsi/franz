@@ -1,22 +1,29 @@
 use crate::ast::{
-    AExp, Accidental, BExp, BaseNoteLen, BasePitch, Handle, KeySigPitch, Note,
-    NoteComp, NoteLen, Pitch, PitchComp, RhythmComp
+    AExp, Accidental, BExp, Handle, KeySigPitch, Note, NoteComp, NoteLen,
+    Pitch, PitchComp, RhythmComp
 };
 
-fn lookup_motif(_var: Handle) -> RhythmComp {
-    RhythmComp::Beat((BaseNoteLen::Qtr, 0))
+use crate::error::{FranzError, FranzResult};
+
+use std::collections::HashMap;
+
+//Lookup pre-defined sequences
+macro_rules! define_lookup {
+    ($name: ident, $storetype:ident) => {
+        fn $name(
+            var: Handle, store: &mut HashMap<String, $storetype>
+        ) -> FranzResult<&$storetype> {
+            match store.get(&var) {
+                Some(v) => Ok(v),
+                None => Err(FranzError::UnboundError)
+            }
+        }
+    };
 }
 
-fn lookup_pitches(_var: Handle) -> PitchComp {
-    PitchComp::Pitch((BasePitch::C, Accidental::Natural, AExp::Int(4)))
-}
-
-fn lookup_phrase(_var: Handle) -> NoteComp {
-    NoteComp::Note((
-        (BasePitch::C, Accidental::Natural, AExp::Int(4)),
-        (BaseNoteLen::Qtr, 0)
-    ))
-}
+define_lookup!(lookup_motif, RhythmComp);
+define_lookup!(lookup_pitches, PitchComp);
+define_lookup!(lookup_phrase, NoteComp);
 
 // Evaluate an arithmetic expression (simplify before compilation)
 fn eval_aexp(e: &AExp) -> i32 {
@@ -73,7 +80,7 @@ pub fn flatten_beat(rhythm: &RhythmComp) -> Vec<NoteLen> {
 pub fn flatten_pitch(pitches: &PitchComp) -> Vec<Pitch> {
     match pitches {
         PitchComp::Var(_) => vec![],
-        PitchComp::Pitch(n) => vec![n.clone()],
+        PitchComp::Pitch(n) => vec![*n],
 
         PitchComp::Plus(r1, r2) => {
             let (mut v1, v2) = (flatten_pitch(r1), flatten_pitch(r2));
@@ -96,22 +103,25 @@ pub fn flatten_pitch(pitches: &PitchComp) -> Vec<Pitch> {
 pub fn apply_motif(motif: Vec<NoteLen>, pitches: Vec<Pitch>) -> Vec<Note> {
     assert!(motif.len() == pitches.len());
     (0..motif.len())
-        .map(|x| (pitches[x].clone(), motif[x].clone()))
+        .map(|x| (pitches[x], motif[x].clone()))
         .collect::<Vec<_>>()
 }
 
-fn apply_keysig(mut pitch: Pitch, keysig: &Vec<KeySigPitch>) {
+// Apply a key signature to a note
+fn apply_keysig(mut pitch: Pitch, keysig: &Vec<KeySigPitch>) -> Pitch {
     let (base, accidental, octave) = pitch;
     for key in keysig {
         let (keybase, keyacc) = key;
-        if (base == *keybase) && (accidental == Accidental::Blank) {
-            pitch = (*keybase, *keyacc, octave.clone());
+        if base == *keybase && accidental == Accidental::Blank {
+            pitch = (base, *keyacc, octave);
         }
     }
+    pitch
 }
 
-fn keysig_phrase(pitches: Vec<Pitch>, keysig: Vec<KeySigPitch>) {
-    for pitch in pitches {
-        apply_keysig(pitch, &keysig);
+// Apply a key signature to a sequence of notes
+fn keysig_phrase(mut pitches: Vec<Pitch>, keysig: Vec<KeySigPitch>) {
+    for pitch in &mut pitches {
+        *pitch = apply_keysig(*pitch, &keysig);
     }
 }

@@ -39,6 +39,7 @@ fn uexpr_to_bexp(
     argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
 ) -> FranzResult<BExp> {
     match expr {
+        //Check that variable is correctly typed as boolean
         UntypedExpr::Var(handle) => match type_var(handle, argmap) {
             Ok(data) => match data {
                 VarType::Bool => Ok(BExp::Var(handle.to_string())),
@@ -69,6 +70,7 @@ fn uexpr_to_rhythmcomp(
     argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
 ) -> FranzResult<RhythmComp> {
     match expr {
+        //Check that variable is correctly typed as motif
         UntypedExpr::Var(handle) => match type_var(handle, argmap) {
             Ok(data) => match data {
                 VarType::Motif => Ok(RhythmComp::Var(handle.to_string())),
@@ -102,6 +104,7 @@ fn uexpr_to_pitchcomp(
     argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
 ) -> FranzResult<PitchComp> {
     match expr {
+        //Check that variable is correctly typed as pitch sequence
         UntypedExpr::Var(handle) => match type_var(handle, argmap) {
             Ok(data) => match data {
                 VarType::Pitches => Ok(PitchComp::Var(handle.to_string())),
@@ -130,6 +133,7 @@ fn uexpr_to_notecomp(
     argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
 ) -> FranzResult<NoteComp> {
     match expr {
+        //Check that variable is correctly typed as phrase
         UntypedExpr::Var(handle) => match type_var(handle, argmap) {
             Ok(data) => match data {
                 VarType::Phrase => Ok(NoteComp::Var(handle.to_string())),
@@ -163,7 +167,7 @@ fn uexpr_to_notecomp(
             ))
         }
 
-        _ => Err(FranzError::FlattenError)
+        _ => Err(FranzError::ParseError)
     }
 }
 
@@ -173,10 +177,12 @@ fn uexpr_to_expr(
 ) -> FranzResult<Expr> {
     match expr {
         UntypedExpr::Motif(name, args, comp) => {
+            //Bind argument names as new variables
             for arg in args {
                 argmap.insert(arg.to_string(), VarType::Bool);
             }
 
+            //Bind motif as new variable
             let result = Expr::MotifAssgn(
                 name.to_string(),
                 Box::new(Expr::Motif(
@@ -193,6 +199,7 @@ fn uexpr_to_expr(
                 name.to_string(),
                 Box::new(Expr::Pitches(uexpr_to_pitchcomp(argmap, comp)?))
             );
+            //Bind pitch sequence as new variable
             argmap.insert(name.to_string(), VarType::Pitches);
             Ok(result)
         }
@@ -202,11 +209,12 @@ fn uexpr_to_expr(
                 name.to_string(),
                 Box::new(Expr::Phrase(uexpr_to_notecomp(argmap, comp)?))
             );
+            //Bind phrase as new variable
             argmap.insert(name.to_string(), VarType::Phrase);
             Ok(result)
         }
 
-        _ => Err(FranzError::FlattenError)
+        _ => Err(FranzError::ParseError)
     }
 }
 
@@ -219,6 +227,7 @@ pub fn uexpr_to_control(
             if comps.is_empty() {
                 Err(FranzError::ParseError)
             } else {
+                //Parse return separately from central components
                 let (hd, tl) =
                     (&comps[..comps.len() - 1], &comps[comps.len() - 1]);
 
