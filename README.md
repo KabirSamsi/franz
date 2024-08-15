@@ -82,7 +82,7 @@ Or (to simplify our earlier example):
 ```
 motif FifthSymphonyOpening[] = {
   (4 * et); hf.
-};
+};;
 ```
 
 Note that the beats should be included **after** the arithmetic expression.
@@ -95,20 +95,23 @@ The syntax for a `pitch` itself (without rhythm applied) is `<note><octave>_<opt
 
 Pitch sequences are expressed as `{note1; note2; ...}` or for example, `{d4; e4; f4; g4; e4; c4; d4;}` `note`s themselves are written as a pairing `(c4, qt)`.
 
-**Applying a motif to a pitch sequence** allows us to use earlier motifs pitch sequences to generate full note sequences. Here's the syntax for that:
+**Applying a motif to a pitch sequence** allows us to use earlier motifs pitch sequences to generate full phrases. Here's the syntax for that:
 
 ```
-Beethoven5Opening = FifthSymphonyOpening[{rst; {3 * g4}; e4}]; FifthSymphonyOpening[{rst; {3 * f4}; d4}];
+phrase Beethoven5Opening = {
+  FifthSymphonyOpening[{rst; {3 * g4}; e4}];
+  FifthSymphonyOpening[{rst; {3 * f4}; d4}]
+};;
 ```
 
 Note that `e4` is not marked as flat. The key signature we described above handles that.
 
 ### Return Blocks
 
-`Return` is actually just a phrase. Just chain together the desired phrases, with any necessary manipulations:
+`return` can chain together the desired phrases, with any necessary manipulations, and return a phrase to end the whole sequence.
 
 ```
-return {Phrase1; Phrase2; ...};;
+return {Phrase1; 2 * Phrase2; ...};;
 ```
 
 Or in this case:
