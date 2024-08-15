@@ -42,7 +42,7 @@ fn length_idx(beatval: &BaseNoteLen) -> i32 {
 }
 
 // Compute frequency and length of a note
-fn process(note: Note, speed: f32) -> FranzResult<(f32, f32)> {
+fn process(note: &Note, speed: f32) -> FranzResult<(f32, f32)> {
     let two: f32 = 2.0;
     let half: f32 = 0.5;
 
@@ -59,7 +59,7 @@ fn process(note: Note, speed: f32) -> FranzResult<(f32, f32)> {
         _ => Err(FranzError::FlattenError)
     }?;
 
-    let idx = 12 * (octave + 1) + note_idx(&base, &acc);
+    let idx = 12 * (octave + 1) + note_idx(base, acc);
     let diff: f32 = (idx - 69) as f32;
     let freq: f32 = 440.0 * two.powf(diff / 12.0);
 
@@ -70,7 +70,7 @@ fn process(note: Note, speed: f32) -> FranzResult<(f32, f32)> {
 
     // Truncated floating-point precision calculation for time
     let time: f32 =
-        (1000.0 * speed * growth_factor * two.powf(length_idx(&beat) as f32))
+        (1000.0 * speed * growth_factor * two.powf(length_idx(beat) as f32))
             .round()
             / 1000.0;
 
@@ -98,7 +98,7 @@ pub fn compile_seq(
     for n in notes {
         //Process each line and write it
         if let NoteComp::Note(note) = n {
-            (freq, time) = process(note, speed)?;
+            (freq, time) = process(&note, speed)?;
             file.write_all(
                 (format!(
                     "0.5 => s.gain; {freq} => s.freq; {time} :: second => now;\n"

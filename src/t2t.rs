@@ -1,105 +1,243 @@
-use crate::ast::{AExp, BExp, NoteComp, PitchComp, RhythmComp, UntypedExpr};
+use crate::ast::{
+    AExp, BExp, Control, Expr, NoteComp, PitchComp, RhythmComp, UntypedExpr,
+    VarType
+};
 
 use crate::error::{FranzError, FranzResult};
 
-fn expr_to_aexp(expr: &UntypedExpr) -> FranzResult<AExp> {
+use std::collections::HashMap;
+
+// Obtain the type of a variable
+fn type_var(
+    keyword: &String, map: &mut HashMap<String, VarType>
+) -> FranzResult<VarType> {
+    match map.get(keyword) {
+        Some(var) => Ok(*var),
+        None => Err(FranzError::UnboundError)
+    }
+}
+
+//Compile untyped expression to arithmetic expression
+fn uexpr_to_aexp(expr: &UntypedExpr) -> FranzResult<AExp> {
     match expr {
         UntypedExpr::Int(i) => Ok(AExp::Int(*i)),
         UntypedExpr::Plus(e1, e2) => {
-            let (a1, a2) = (expr_to_aexp(e1), expr_to_aexp(e2));
+            let (a1, a2) = (uexpr_to_aexp(e1), uexpr_to_aexp(e2));
             Ok(AExp::Plus(Box::new(a1?), Box::new(a2?)))
         }
 
         UntypedExpr::Times(e1, e2) => {
-            let (a1, a2) = (expr_to_aexp(e1), expr_to_aexp(e2));
+            let (a1, a2) = (uexpr_to_aexp(e1), uexpr_to_aexp(e2));
             Ok(AExp::Times(Box::new(a1?), Box::new(a2?)))
         }
-        _ => Err(FranzError::FlattenError)
+        _ => Err(FranzError::ParseError)
     }
 }
 
-fn expr_to_bexp(expr: &UntypedExpr) -> FranzResult<BExp> {
+//Compile untyped expression to boolean expression
+fn uexpr_to_bexp(
+    argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
+) -> FranzResult<BExp> {
     match expr {
-        //VAR RULE
+        UntypedExpr::Var(handle) => match type_var(handle, argmap) {
+            Ok(data) => match data {
+                VarType::Bool => Ok(BExp::Var(handle.to_string())),
+                _ => Err(FranzError::ParseError)
+            },
+            _ => Err(FranzError::UnboundError)
+        },
+
         UntypedExpr::Bool(true) => Ok(BExp::True),
         UntypedExpr::Bool(false) => Ok(BExp::False),
-        UntypedExpr::Not(e) => Ok(BExp::Not(Box::new(expr_to_bexp(e)?))),
+        UntypedExpr::Not(e) => {
+            Ok(BExp::Not(Box::new(uexpr_to_bexp(argmap, e)?)))
+        }
         UntypedExpr::And(e1, e2) => Ok(BExp::And(
-            Box::new(expr_to_bexp(e1)?),
-            Box::new(expr_to_bexp(e2)?)
+            Box::new(uexpr_to_bexp(argmap, e1)?),
+            Box::new(uexpr_to_bexp(argmap, e2)?)
         )),
         UntypedExpr::Or(e1, e2) => Ok(BExp::Or(
-            Box::new(expr_to_bexp(e1)?),
-            Box::new(expr_to_bexp(e2)?)
+            Box::new(uexpr_to_bexp(argmap, e1)?),
+            Box::new(uexpr_to_bexp(argmap, e2)?)
         )),
-        _ => Err(FranzError::FlattenError)
+        _ => Err(FranzError::ParseError)
     }
 }
 
-fn expr_to_rhythmcomp(expr: &UntypedExpr) -> FranzResult<RhythmComp> {
+//Compile untyped expression to rhythm component
+fn uexpr_to_rhythmcomp(
+    argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
+) -> FranzResult<RhythmComp> {
     match expr {
-        //VAR RULE
+        UntypedExpr::Var(handle) => match type_var(handle, argmap) {
+            Ok(data) => match data {
+                VarType::Motif => Ok(RhythmComp::Var(handle.to_string())),
+                _ => Err(FranzError::ParseError)
+            },
+            _ => Err(FranzError::UnboundError)
+        },
+
         UntypedExpr::Beat(l) => Ok(RhythmComp::Beat(l.clone())),
         UntypedExpr::Ternary(b, e1, e2) => Ok(RhythmComp::Ternary(
-            expr_to_bexp(b)?,
-            Box::new(expr_to_rhythmcomp(e1)?),
-            Box::new(expr_to_rhythmcomp(e2)?)
+            uexpr_to_bexp(argmap, b)?,
+            Box::new(uexpr_to_rhythmcomp(argmap, e1)?),
+            Box::new(uexpr_to_rhythmcomp(argmap, e2)?)
         )),
 
         UntypedExpr::Plus(e1, e2) => Ok(RhythmComp::Plus(
-            Box::new(expr_to_rhythmcomp(e1)?),
-            Box::new(expr_to_rhythmcomp(e2)?)
+            Box::new(uexpr_to_rhythmcomp(argmap, e1)?),
+            Box::new(uexpr_to_rhythmcomp(argmap, e2)?)
         )),
 
         UntypedExpr::Times(e1, e2) => Ok(RhythmComp::Times(
-            expr_to_aexp(e1)?,
-            Box::new(expr_to_rhythmcomp(e2)?)
+            uexpr_to_aexp(e1)?,
+            Box::new(uexpr_to_rhythmcomp(argmap, e2)?)
         )),
-        _ => Err(FranzError::FlattenError)
+        _ => Err(FranzError::ParseError)
     }
 }
 
-fn expr_to_pitchcomp(expr: &UntypedExpr) -> FranzResult<PitchComp> {
+//Compile untyped expression to pitch component
+fn uexpr_to_pitchcomp(
+    argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
+) -> FranzResult<PitchComp> {
     match expr {
-        //VAR RULE
+        UntypedExpr::Var(handle) => match type_var(handle, argmap) {
+            Ok(data) => match data {
+                VarType::Pitches => Ok(PitchComp::Var(handle.to_string())),
+                _ => Err(FranzError::ParseError)
+            },
+            _ => Err(FranzError::UnboundError)
+        },
+
         UntypedExpr::Pitch(p) => Ok(PitchComp::Pitch(p.clone())),
 
         UntypedExpr::Plus(e1, e2) => Ok(PitchComp::Plus(
-            Box::new(expr_to_pitchcomp(e1)?),
-            Box::new(expr_to_pitchcomp(e2)?)
+            Box::new(uexpr_to_pitchcomp(argmap, e1)?),
+            Box::new(uexpr_to_pitchcomp(argmap, e2)?)
         )),
 
         UntypedExpr::Times(e1, e2) => Ok(PitchComp::Times(
-            expr_to_aexp(e1)?,
-            Box::new(expr_to_pitchcomp(e2)?)
+            uexpr_to_aexp(e1)?,
+            Box::new(uexpr_to_pitchcomp(argmap, e2)?)
         )),
+        _ => Err(FranzError::ParseError)
+    }
+}
+
+//Compile untyped expression to note component
+fn uexpr_to_notecomp(
+    argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
+) -> FranzResult<NoteComp> {
+    match expr {
+        UntypedExpr::Var(handle) => match type_var(handle, argmap) {
+            Ok(data) => match data {
+                VarType::Phrase => Ok(NoteComp::Var(handle.to_string())),
+                _ => Err(FranzError::ParseError)
+            },
+            _ => Err(FranzError::UnboundError)
+        },
+
+        UntypedExpr::Note(n) => Ok(NoteComp::Note(n.clone())),
+
+        UntypedExpr::Plus(e1, e2) => Ok(NoteComp::Plus(
+            Box::new(uexpr_to_notecomp(argmap, e1)?),
+            Box::new(uexpr_to_notecomp(argmap, e2)?)
+        )),
+
+        UntypedExpr::Times(e1, e2) => Ok(NoteComp::Times(
+            uexpr_to_aexp(e1)?,
+            Box::new(uexpr_to_notecomp(argmap, e2)?)
+        )),
+
+        UntypedExpr::Apply(e1, args, e2) => {
+            let mut result = Vec::new();
+            for arg in args {
+                result.push(uexpr_to_bexp(argmap, arg)?);
+            }
+
+            Ok(NoteComp::Apply(
+                uexpr_to_rhythmcomp(argmap, e1)?,
+                result,
+                uexpr_to_pitchcomp(argmap, e2)?
+            ))
+        }
+
         _ => Err(FranzError::FlattenError)
     }
 }
 
-fn expr_to_notecomp(expr: &UntypedExpr) -> FranzResult<NoteComp> {
+//Compile untyped expression to well-formed Franz expression
+fn uexpr_to_expr(
+    argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
+) -> FranzResult<Expr> {
     match expr {
-        //VAR RULE
-        UntypedExpr::Note(n) => Ok(NoteComp::Note(n.clone())),
+        UntypedExpr::Motif(name, args, comp) => {
+            for arg in args {
+                argmap.insert(arg.to_string(), VarType::Bool);
+            }
 
-        UntypedExpr::Plus(e1, e2) => Ok(NoteComp::Plus(
-            Box::new(expr_to_notecomp(e1)?),
-            Box::new(expr_to_notecomp(e2)?)
-        )),
+            let result = Expr::MotifAssgn(
+                name.to_string(),
+                Box::new(Expr::Motif(
+                    args.to_vec(),
+                    uexpr_to_rhythmcomp(argmap, comp)?
+                ))
+            );
+            argmap.insert(name.to_string(), VarType::Motif);
+            Ok(result)
+        }
 
-        UntypedExpr::Times(e1, e2) => Ok(NoteComp::Times(
-            expr_to_aexp(e1)?,
-            Box::new(expr_to_notecomp(e2)?)
-        )),
+        UntypedExpr::Pitches(name, comp) => {
+            let result = Expr::PitchAssgn(
+                name.to_string(),
+                Box::new(Expr::Pitches(uexpr_to_pitchcomp(argmap, comp)?))
+            );
+            argmap.insert(name.to_string(), VarType::Pitches);
+            Ok(result)
+        }
 
-        UntypedExpr::Apply(e1, args, e2) => Ok(NoteComp::Apply(
-            expr_to_rhythmcomp(e1)?,
-            args.iter()
-                .map(expr_to_bexp)
-                .collect::<Result<Vec<BExp>, FranzError>>()?,
-            expr_to_pitchcomp(e2)?
-        )),
+        UntypedExpr::Phrase(name, comp) => {
+            let result = Expr::PhraseAssgn(
+                name.to_string(),
+                Box::new(Expr::Phrase(uexpr_to_notecomp(argmap, comp)?))
+            );
+            argmap.insert(name.to_string(), VarType::Phrase);
+            Ok(result)
+        }
 
         _ => Err(FranzError::FlattenError)
+    }
+}
+
+//Compile untyped expression to control sequence
+pub fn uexpr_to_control(
+    argmap: &mut HashMap<String, VarType>, expr: &UntypedExpr
+) -> FranzResult<Control> {
+    match expr {
+        UntypedExpr::Control(params, comps) => {
+            if comps.is_empty() {
+                Err(FranzError::ParseError)
+            } else {
+                let (hd, tl) =
+                    (&comps[..comps.len() - 1], &comps[comps.len() - 1]);
+
+                match tl {
+                    UntypedExpr::Return(e) => {
+                        let mut mapped_head = Vec::new();
+                        for elem in hd {
+                            mapped_head.push(uexpr_to_expr(argmap, elem)?);
+                        }
+                        Ok((
+                            params.to_vec(),
+                            mapped_head,
+                            Expr::Phrase(uexpr_to_notecomp(argmap, e)?)
+                        ))
+                    }
+                    _ => Err(FranzError::ParseError)
+                }
+            }
+        }
+        _ => Err(FranzError::ParseError)
     }
 }

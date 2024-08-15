@@ -19,46 +19,47 @@ fn lookup_phrase(_var: Handle) -> NoteComp {
 }
 
 // Evaluate an arithmetic expression (simplify before compilation)
-fn eval_aexp(e: AExp) -> i32 {
+fn eval_aexp(e: &AExp) -> i32 {
     match e {
-        AExp::Int(i) => i,
-        AExp::Plus(e1, e2) => eval_aexp(*e1) + eval_aexp(*e2),
-        AExp::Times(e1, e2) => eval_aexp(*e1) * eval_aexp(*e2)
+        AExp::Int(i) => *i,
+        AExp::Plus(e1, e2) => eval_aexp(e1) + eval_aexp(e2),
+        AExp::Times(e1, e2) => eval_aexp(e1) * eval_aexp(e2)
     }
 }
 
 // Evaluate an boolean expression (simplify before compilation)
-fn eval_bexp(e: BExp) -> bool {
+fn eval_bexp(e: &BExp) -> bool {
     match e {
         BExp::Var(_) => true, // TODO
         BExp::True => true,
         BExp::False => false,
-        BExp::And(b1, b2) => eval_bexp(*b1) && eval_bexp(*b2),
-        BExp::Or(b1, b2) => eval_bexp(*b1) || eval_bexp(*b2),
-        BExp::Not(b) => !eval_bexp(*b)
+        BExp::And(b1, b2) => eval_bexp(b1) && eval_bexp(b2),
+        BExp::Or(b1, b2) => eval_bexp(b1) || eval_bexp(b2),
+        BExp::Not(b) => !eval_bexp(b)
     }
 }
 
 // Flatten a beat sequence AST to a vector of note/beat lengths
-pub fn flatten_beat(rhythm: RhythmComp) -> Vec<NoteLen> {
+pub fn flatten_beat(rhythm: &RhythmComp) -> Vec<NoteLen> {
     match rhythm {
-        RhythmComp::Beat(n) => vec![n],
+        RhythmComp::Var(_) => vec![],
+        RhythmComp::Beat(n) => vec![n.clone()],
 
         RhythmComp::Ternary(b, r1, r2) => {
             if eval_bexp(b) {
-                flatten_beat(*r1)
+                flatten_beat(r1)
             } else {
-                flatten_beat(*r2)
+                flatten_beat(r2)
             }
         }
         RhythmComp::Plus(r1, r2) => {
-            let (mut v1, v2) = (flatten_beat(*r1), flatten_beat(*r2));
+            let (mut v1, v2) = (flatten_beat(r1), flatten_beat(r2));
             v1.extend(v2);
             v1
         }
         RhythmComp::Times(e, r) => {
             let n = eval_aexp(e);
-            let v = flatten_beat(*r);
+            let v = flatten_beat(r);
             let mut new_vec = Vec::new();
             for _ in 0..n {
                 new_vec.extend(v.clone());
@@ -69,18 +70,19 @@ pub fn flatten_beat(rhythm: RhythmComp) -> Vec<NoteLen> {
 }
 
 // Flatten a pitch sequence AST to a vector of pitches
-pub fn flatten_pitch(pitches: PitchComp) -> Vec<Pitch> {
+pub fn flatten_pitch(pitches: &PitchComp) -> Vec<Pitch> {
     match pitches {
-        PitchComp::Pitch(n) => vec![n],
+        PitchComp::Var(_) => vec![],
+        PitchComp::Pitch(n) => vec![n.clone()],
 
         PitchComp::Plus(r1, r2) => {
-            let (mut v1, v2) = (flatten_pitch(*r1), flatten_pitch(*r2));
+            let (mut v1, v2) = (flatten_pitch(r1), flatten_pitch(r2));
             v1.extend(v2);
             v1
         }
         PitchComp::Times(e, r) => {
             let n = eval_aexp(e);
-            let v = flatten_pitch(*r);
+            let v = flatten_pitch(r);
             let mut new_vec = Vec::new();
             for _ in 0..n {
                 new_vec.extend(v.clone());
